@@ -224,6 +224,8 @@
 
     <string name="action_share">Share</string>
     <string name="action_reply">Reply</string>
+    <string name="title_activity_crop">CropActivity</string>
+    <string name="title_activity_crop_activityt">CropActivityt</string>
 
     <!--
         Haven't found some strings? There's more at
