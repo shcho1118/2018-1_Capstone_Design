@@ -30,6 +30,9 @@ android {
             signingConfig signingConfigs.release
         }
     }
+    buildTypes.each{
+        it.buildConfigField 'String', 'API_KEY', '"AIzaSyBlFog_UK8vB9cU8gX8W-3VQSgq-HVXIIw"'
+    }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
