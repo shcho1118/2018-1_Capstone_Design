@@ -79,6 +79,9 @@ class EventActivity : SimpleActivity() {
         updateEventType()
         updateCalDAVCalendar()
 
+        // 도착장소 id를 반환하는 거..
+        find_location.setOnClickListener{ findLocation() }
+
         event_show_on_map.setOnClickListener { showOnMap() }
         event_start_date.setOnClickListener { setupStartDate() }
         event_start_time.setOnClickListener { setupStartTime() }
@@ -785,5 +788,43 @@ class EventActivity : SimpleActivity() {
         event_type_image.applyColorFilter(textColor)
         event_caldav_calendar_image.applyColorFilter(textColor)
         event_show_on_map.applyColorFilter(getAdjustedPrimaryColor())
+    }
+
+
+    // 입력한 장소의 ID를 가져오는 함수에요.
+    private fun findLocation(){
+        if (event_location.value.isEmpty()) {
+            toast(R.string.please_fill_location)
+            return
+        }
+
+        val placeid = CurrentModule_Class().GetPlaceData(event_location.value)
+        if(placeid.GetPlaceName(0) == null){
+            toast("검색 결과가 없습니다.")
+            location_description.setText("No Found ㅠㅠㅠㅠ").toString()
+            return
+        }
+        location_description.setText(placeid.GetPlaceName(0)).toString()
+        /*
+        val pattern = Pattern.compile(LAT_LON_PATTERN)
+        val locationValue = event_location.value
+        val uri = if (pattern.matcher(locationValue).find()) {
+            val delimiter = if (locationValue.contains(';')) ";" else ","
+            val parts = locationValue.split(delimiter)
+            val latitude = parts.first()
+            val longitude = parts.last()
+            Uri.parse("geo:$latitude,$longitude")
+        } else {
+            val location = Uri.encode(locationValue)
+            Uri.parse("geo:0,0?q=$location")
+        }
+
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
+        } else {
+            toast(R.string.no_app_found)
+        }
+        */
     }
 }
