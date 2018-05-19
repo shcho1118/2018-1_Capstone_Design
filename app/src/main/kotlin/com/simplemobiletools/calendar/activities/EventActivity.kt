@@ -135,6 +135,7 @@ class EventActivity : SimpleActivity() {
         mEventEndDateTime = Formatter.getDateTimeFromTS(realStart + duration)
         event_title.setText(mEvent.title)
         event_location.setText(mEvent.location)
+        location_description.setText(mEvent.locat_description).toString()
         event_description.setText(mEvent.description)
         event_description.movementMethod = LinkMovementMethod.getInstance()
 
@@ -510,6 +511,10 @@ class EventActivity : SimpleActivity() {
             return
         }
 
+        // 테스트 중인 코드
+        val newlocatdescript = location_description.value
+        val newlocatid = ""
+
         val newStartTS = mEventStartDateTime.withSecondOfMinute(0).withMillisOfSecond(0).seconds()
         val newEndTS = mEventEndDateTime.withSecondOfMinute(0).withMillisOfSecond(0).seconds()
 
@@ -564,6 +569,8 @@ class EventActivity : SimpleActivity() {
             lastUpdated = System.currentTimeMillis()
             source = newSource
             location = event_location.value
+            locat_description = newlocatdescript
+            locat_placeid = newlocatid
         }
 
         // recreate the event if it was moved in a different CalDAV calendar
