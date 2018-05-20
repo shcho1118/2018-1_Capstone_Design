@@ -25,6 +25,12 @@ import kotlinx.android.synthetic.main.activity_event.*
 import org.joda.time.DateTime
 import java.util.*
 import java.util.regex.Pattern
+import android.widget.Toast
+import android.content.DialogInterface
+import android.app.AlertDialog;
+
+
+
 
 class EventActivity : SimpleActivity() {
     private val LAT_LON_PATTERN = "^[-+]?([1-8]?\\d(\\.\\d+)?|90(\\.0+)?)([,;])\\s*[-+]?(180(\\.0+)?|((1[0-7]\\d)|([1-9]?\\d))(\\.\\d+)?)\$"
@@ -39,6 +45,7 @@ class EventActivity : SimpleActivity() {
     private var mEventOccurrenceTS = 0
     private var mEventCalendarId = STORED_LOCALLY_ONLY
     private var wasActivityInitialized = false
+    private var locationId = ""
 
     lateinit var mEventStartDateTime: DateTime
     lateinit var mEventEndDateTime: DateTime
@@ -513,7 +520,7 @@ class EventActivity : SimpleActivity() {
 
         // 테스트 중인 코드
         val newlocatdescript = location_description.value
-        val newlocatid = ""
+        val newlocatid = locationId
 
         val newStartTS = mEventStartDateTime.withSecondOfMinute(0).withMillisOfSecond(0).seconds()
         val newEndTS = mEventEndDateTime.withSecondOfMinute(0).withMillisOfSecond(0).seconds()
@@ -811,7 +818,35 @@ class EventActivity : SimpleActivity() {
             location_description.setText("No Found ㅠㅠㅠㅠ").toString()
             return
         }
-        location_description.setText(placeid.GetPlaceName(0)).toString()
+
+        val items = arrayOfNulls<CharSequence>(placeid.GetPlaceNum())
+        for(i in 0..(placeid.GetPlaceNum()-1)){
+            items.set(i,placeid.GetPlaceName(i))
+        }
+        val alertDialogBuilder = AlertDialog.Builder(this)
+
+        // 다이얼로그 셋팅 (제목, 선택시 행동, 취소버튼)
+        alertDialogBuilder.setTitle("장소를 선택해주세요")
+
+        alertDialogBuilder.setItems(items
+        ) { dialog, id ->
+            // 다이얼로그 중 사용자가 하나 선택하면 그 정보를 설정한다.
+            location_description.setText(items[id]).toString()
+            locationId = placeid.GetPlaceid(id)
+            dialog.dismiss()
+        }
+        alertDialogBuilder.setNeutralButton("Cancel"){dialog, which ->
+            dialog.cancel()
+        }
+
+        // 다이얼로그 생성
+        val alertDialog = alertDialogBuilder.create()
+
+        // 다이얼로그 보여주기
+        alertDialog.show()
+
+
+        //location_description.setText(placeid.GetPlaceName(0)).toString()
         /*
         val pattern = Pattern.compile(LAT_LON_PATTERN)
         val locationValue = event_location.value
