@@ -37,6 +37,8 @@ public class CurrentModule_Class {
             return placename.get(n);
         }
 
+        public int GetPlaceNum() { return placename.size(); }
+
         public String GetPlaceid(int n){
             return placeid.get(n);
         }
@@ -57,8 +59,6 @@ public class CurrentModule_Class {
 
                 if (!obj.getString("status").equals("OK"))
                     return false;
-
-                GetListFromJSON();
 
                 return true;
             }
