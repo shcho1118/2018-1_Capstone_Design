@@ -189,6 +189,7 @@
 
         <service android:name=".services.CaptureService" />
         <service android:name=".services.ProjectorService" />
+        <service android:name=".services.MyLocationService" />
 
     </application>
 

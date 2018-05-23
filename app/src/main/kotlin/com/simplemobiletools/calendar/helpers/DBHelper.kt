@@ -63,10 +63,14 @@ class DBHelper private constructor(val context: Context) : SQLiteOpenHelper(cont
     private val COL_PARENT_EVENT_ID = "event_parent_id"
     private val COL_CHILD_EVENT_ID = "event_child_id"
 
+    private val MYLOCATION_TABLE_NAME = "my_location_table"
+    private val MYLONGITUDE = "my_longitude"
+    private val MYLATITUDE = "my_latitude"
+
     private val mDb: SQLiteDatabase = writableDatabase
 
     companion object {
-        private const val DB_VERSION = 20
+        private const val DB_VERSION = 21
         const val DB_NAME = "events.db"
         const val REGULAR_EVENT_TYPE_ID = 1
         var dbInstance: DBHelper? = null
@@ -89,6 +93,7 @@ class DBHelper private constructor(val context: Context) : SQLiteOpenHelper(cont
         createMetaTable(db)
         createTypesTable(db)
         createExceptionsTable(db)
+        createMyLocationTable(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -185,6 +190,12 @@ class DBHelper private constructor(val context: Context) : SQLiteOpenHelper(cont
             db.execSQL("ALTER TABLE $MAIN_TABLE_NAME ADD COLUMN $COL_LOCATION_DESCRIPTION TEXT DEFAULT ''")
             db.execSQL("ALTER TABLE $MAIN_TABLE_NAME ADD COLUMN $COL_LOCATION_ID TEXT DEFAULT ''")
         }
+
+        if(oldVersion < 21) {
+            db.execSQL("CREATE TABLE $MYLOCATION_TABLE_NAME ($MYLONGITUDE INTEGER, $MYLATITUDE INTEGER)")
+            //db.execSQL("ALTER TABLE $MYLOCATION_TABLE_NAME ADD COLUMN $MYLONGITUDE INTEGER NOT NULL DEFAULT 0")
+            //db.execSQL("ALTER TABLE $MYLOCATION_TABLE_NAME ADD COLUMN $MYLATITUDE INTEGER NOT NULL DEFAULT 0")
+        }
     }
 
     private fun createMetaTable(db: SQLiteDatabase) {
@@ -201,6 +212,10 @@ class DBHelper private constructor(val context: Context) : SQLiteOpenHelper(cont
     private fun createExceptionsTable(db: SQLiteDatabase) {
         db.execSQL("CREATE TABLE $EXCEPTIONS_TABLE_NAME ($COL_EXCEPTION_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COL_PARENT_EVENT_ID INTEGER, " +
                 "$COL_OCCURRENCE_TIMESTAMP INTEGER, $COL_OCCURRENCE_DAYCODE INTEGER, $COL_CHILD_EVENT_ID INTEGER)")
+    }
+
+    private fun createMyLocationTable(db: SQLiteDatabase) {
+        db.execSQL("CREATE TABLE $MYLOCATION_TABLE_NAME ($MYLONGITUDE INTEGER, $MYLATITUDE INTEGER)")
     }
 
     private fun addRegularEventType(db: SQLiteDatabase) {
@@ -935,6 +950,10 @@ class DBHelper private constructor(val context: Context) : SQLiteOpenHelper(cont
             }
         }
         return events
+    }
+
+    fun SetLongitudeLatitude(lo : Double, la : Double){
+            // 자 여기를 추가해봅시다아아아.
     }
 
     fun getEventTypes(callback: (types: ArrayList<EventType>) -> Unit) {
