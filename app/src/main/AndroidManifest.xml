@@ -191,6 +191,7 @@
 
         <service android:name=".services.CaptureService" />
         <service android:name=".services.ProjectorService" />
+        <service android:name=".services.MyLocationService" />
 
         <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity" />
         <activity android:name=".activities.CropActivity" />

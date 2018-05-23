@@ -1,9 +1,11 @@
 package com.simplemobiletools.calendar.activities
 
+import android.app.ActivityManager
 import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.database.ContentObserver
 import android.database.Cursor
 import android.graphics.drawable.ColorDrawable
@@ -12,8 +14,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.provider.ContactsContract
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v4.view.MenuItemCompat
 import android.support.v7.widget.SearchView
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -31,6 +36,7 @@ import com.simplemobiletools.calendar.models.Event
 import com.simplemobiletools.calendar.models.EventType
 import com.simplemobiletools.calendar.models.ListEvent
 import com.simplemobiletools.calendar.services.CaptureService
+import com.simplemobiletools.calendar.services.MyLocationService
 import com.simplemobiletools.calendar.services.ProjectorService
 import com.simplemobiletools.commons.dialogs.FilePickerDialog
 import com.simplemobiletools.commons.dialogs.RadioGroupDialog
@@ -45,6 +51,7 @@ import org.joda.time.DateTime
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.jar.Manifest
 import kotlin.collections.ArrayList
 
 class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
@@ -69,6 +76,19 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
 
     private lateinit var mgr: MediaProjectionManager
     private val REQUEST_SCREENSHOT = 59706
+
+    // 서비스가 실행중인지 체크하는 메서드
+    private fun isServiceRunning(s : String): Boolean {
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (service in manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (s == service.service.className) {
+                Log.d("Service Check : ", "true 반환")
+                return true
+            }
+        }
+        Log.d("Service Check : ", "false 반환")
+        return false
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
         super.onActivityResult(requestCode, resultCode, resultData)
@@ -145,6 +165,21 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
         if (config.caldavSync) {
             refreshCalDAVCalendars(false)
         }
+
+        // 서비스 시작
+        val gpsCheck = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) // 위치 권한 없으면 이를 허용하는지 여부를 물어본다.
+        if (gpsCheck == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION),
+                    11)
+        }
+        Log.d("Main Activity", "Location 서비스가 시작했어여")
+        val locationService = Intent( applicationContext, MyLocationService::class.java) // 이동할 컴포넌트
+        if(isServiceRunning("com.simplemobiletools.calendar.services.MyLocationService")){  // 이미 서비스가 실행중이면 실행하지 않는다.
+        }
+        else {
+            startService(locationService)
+        }
+
     }
 
     override fun onResume() {

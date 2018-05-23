@@ -82,7 +82,7 @@ class Config(context: Context) : BaseConfig(context) {
         set(calendarId) = prefs.edit().putInt(LAST_USED_CALDAV_CALENDAR, calendarId).apply()
 
     var replaceDescription: Boolean
-        get() = prefs.getBoolean(REPLACE_DESCRIPTION, false)
+        get() = prefs.getBoolean(REPLACE_DESCRIPTION, true)
         set(replaceDescription) = prefs.edit().putBoolean(REPLACE_DESCRIPTION, replaceDescription).apply()
 
     var showGrid: Boolean
