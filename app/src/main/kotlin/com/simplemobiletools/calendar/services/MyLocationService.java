@@ -116,7 +116,7 @@ public class MyLocationService extends Service {
                     int remaintime = 0;
 
                     // 만약 설정이 거리 기반으로 설정되어 있고 8시간 안에 일어날 사건이라면
-                    if(/*reminderTime == -2 && */ (lefttime <= 60000 * 60 * 8 && lefttime > 0)) {
+                    if(/*reminderTime == -2 && */ (lefttime <= 60000 * 60 * 8 && lefttime > 0) && eventPlaceID != "") {
                         if(longitude != 0 && latitude != 0){
                             AskGoogle askGoogle = new AskGoogle(eventPlaceID, longitude, latitude);
                             if(askGoogle.GetResult() != 0){
