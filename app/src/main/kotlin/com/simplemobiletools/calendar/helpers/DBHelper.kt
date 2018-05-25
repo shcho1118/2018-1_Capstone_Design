@@ -20,7 +20,7 @@ import org.joda.time.DateTime
 import java.util.*
 import kotlin.collections.ArrayList
 
-class DBHelper private constructor(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
+class DBHelper public constructor(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
     private val MAIN_TABLE_NAME = "events"
     private val COL_ID = "id"
     private val COL_START_TS = "start_ts"
@@ -193,8 +193,6 @@ class DBHelper private constructor(val context: Context) : SQLiteOpenHelper(cont
 
         if(oldVersion < 21) {
             db.execSQL("CREATE TABLE $MYLOCATION_TABLE_NAME ($MYLONGITUDE INTEGER, $MYLATITUDE INTEGER)")
-            //db.execSQL("ALTER TABLE $MYLOCATION_TABLE_NAME ADD COLUMN $MYLONGITUDE INTEGER NOT NULL DEFAULT 0")
-            //db.execSQL("ALTER TABLE $MYLOCATION_TABLE_NAME ADD COLUMN $MYLATITUDE INTEGER NOT NULL DEFAULT 0")
         }
     }
 
@@ -952,8 +950,8 @@ class DBHelper private constructor(val context: Context) : SQLiteOpenHelper(cont
         return events
     }
 
-    fun SetLongitudeLatitude(lo : Double, la : Double){
-            // 자 여기를 추가해봅시다아아아.
+    fun SetLongitudeLatitude(db: SQLiteDatabase, lo : Double, la : Double){
+        db.execSQL(String.format("INSERT INTO $MYLOCATION_TABLE_NAME($MYLONGITUDE, $MYLATITUDE) VALUES(%d, %d)",lo, la))
     }
 
     fun getEventTypes(callback: (types: ArrayList<EventType>) -> Unit) {
