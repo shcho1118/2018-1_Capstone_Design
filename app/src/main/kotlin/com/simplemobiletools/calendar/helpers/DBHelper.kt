@@ -40,6 +40,7 @@ class DBHelper public constructor(val context: Context) : SQLiteOpenHelper(conte
     private val COL_LOCATION = "location"
     private val COL_LOCATION_DESCRIPTION = "location_description"
     private val COL_LOCATION_ID = "location_id"
+    private val COL_CHECK_LOCATION = "check_location"
 
     private val META_TABLE_NAME = "events_meta"
     private val COL_EVENT_ID = "event_id"
@@ -70,7 +71,7 @@ class DBHelper public constructor(val context: Context) : SQLiteOpenHelper(conte
     private val mDb: SQLiteDatabase = writableDatabase
 
     companion object {
-        private const val DB_VERSION = 21
+        private const val DB_VERSION = 22
         const val DB_NAME = "events.db"
         const val REGULAR_EVENT_TYPE_ID = 1
         var dbInstance: DBHelper? = null
@@ -193,6 +194,10 @@ class DBHelper public constructor(val context: Context) : SQLiteOpenHelper(conte
 
         if(oldVersion < 21) {
             db.execSQL("CREATE TABLE $MYLOCATION_TABLE_NAME ($MYLONGITUDE INTEGER, $MYLATITUDE INTEGER)")
+        }
+
+        if(oldVersion < 22) {
+            db.execSQL("ALTER TABLE $MAIN_TABLE_NAME ADD COLUMN $COL_CHECK_LOCATION INTEGER NOT NULL DEFAULT 0")
         }
     }
 
@@ -318,6 +323,7 @@ class DBHelper public constructor(val context: Context) : SQLiteOpenHelper(conte
             put(COL_LOCATION, event.location)
             put(COL_LOCATION_DESCRIPTION, event.locat_description)
             put(COL_LOCATION_ID, event.locat_placeid)
+            put(COL_CHECK_LOCATION, event.check_location)
         }
     }
 
@@ -895,7 +901,7 @@ class DBHelper public constructor(val context: Context) : SQLiteOpenHelper(conte
     private val allColumns: Array<String>
         get() = arrayOf("$MAIN_TABLE_NAME.$COL_ID", COL_START_TS, COL_END_TS, COL_TITLE, COL_DESCRIPTION, COL_REMINDER_MINUTES, COL_REMINDER_MINUTES_2,
                 COL_REMINDER_MINUTES_3, COL_REPEAT_INTERVAL, COL_REPEAT_RULE, COL_IMPORT_ID, COL_FLAGS, COL_REPEAT_LIMIT, COL_EVENT_TYPE, COL_OFFSET,
-                COL_IS_DST_INCLUDED, COL_LAST_UPDATED, COL_EVENT_SOURCE, COL_LOCATION, COL_LOCATION_DESCRIPTION, COL_LOCATION_ID)
+                COL_IS_DST_INCLUDED, COL_LAST_UPDATED, COL_EVENT_SOURCE, COL_LOCATION, COL_LOCATION_DESCRIPTION, COL_LOCATION_ID, COL_CHECK_LOCATION)
 
     private fun fillEvents(cursor: Cursor?): List<Event> {
         val eventTypeColors = SparseIntArray()
@@ -928,6 +934,7 @@ class DBHelper public constructor(val context: Context) : SQLiteOpenHelper(conte
                     val location = cursor.getStringValue(COL_LOCATION)
                     val locationDescription = cursor.getStringValue(COL_LOCATION_DESCRIPTION)
                     val locationId = cursor.getStringValue(COL_LOCATION_ID)
+                    val checkLocation = cursor.getIntValue(COL_CHECK_LOCATION)
                     val color = eventTypeColors[eventType]
 
                     val ignoreEventOccurrences = if (repeatInterval != 0) {
@@ -942,7 +949,7 @@ class DBHelper public constructor(val context: Context) : SQLiteOpenHelper(conte
 
                     val event = Event(id, startTS, endTS, title, description, reminder1Minutes, reminder2Minutes, reminder3Minutes,
                             repeatInterval, importId, flags, repeatLimit, repeatRule, eventType, ignoreEventOccurrences, offset, isDstIncluded,
-                            0, lastUpdated, source, color, location, locationDescription, locationId)
+                            0, lastUpdated, source, color, location, locationDescription, locationId, checkLocation)
                     events.add(event)
                 } while (cursor.moveToNext())
             }

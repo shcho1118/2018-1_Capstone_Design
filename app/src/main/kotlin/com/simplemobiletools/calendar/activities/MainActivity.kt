@@ -51,7 +51,6 @@ import org.joda.time.DateTime
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.jar.Manifest
 import kotlin.collections.ArrayList
 
 class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
@@ -172,12 +171,12 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
             ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION),
                     11)
         }
-        Log.d("Main Activity", "Location 서비스가 시작했어여")
         val locationService = Intent( applicationContext, MyLocationService::class.java) // 이동할 컴포넌트
         if(isServiceRunning("com.simplemobiletools.calendar.services.MyLocationService")){  // 이미 서비스가 실행중이면 실행하지 않는다.
         }
         else {
             startService(locationService)
+            Log.d("Main Activity", "Location 서비스가 시작했어여")
         }
 
     }
