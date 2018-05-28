@@ -1,6 +1,7 @@
 package com.simplemobiletools.calendar.services;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -72,6 +73,7 @@ public class AskGoogle {
         else
             modeurl = "&mode=transit";
         String finalurl = urlstring + modeurl+ mykey;
+        Log.d("Location Test-Askgoogle", "최종 주소 : " + finalurl);
         // System.out.println(finalurl);  // 테스트용 코드
 
         try {
@@ -134,7 +136,6 @@ public class AskGoogle {
                 while (scan.hasNext())
                     getpage += scan.nextLine();
                 scan.close();
-                System.out.println("Test2 : " + googleurl);
             } catch (Exception e) {
                 e.printStackTrace();
             }

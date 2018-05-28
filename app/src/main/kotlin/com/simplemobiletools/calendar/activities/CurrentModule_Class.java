@@ -47,7 +47,7 @@ public class CurrentModule_Class {
         // 이 메서드는 네트워크 연결을 필요로 하므로 밑의 DownloadJson과 함께 작동하게 된다.
         public boolean GetJSONData(){
             try {
-                String basic = "https://maps.googleapis.com/maps/api/place/autocomplete/json?language=ko&";
+                String basic = "https://maps.googleapis.com/maps/api/place/autocomplete/json?language=ko&components=country:kr&";
                 String finalurl = basic + "input=" + URLEncoder.encode(input,"utf-8") + mykey;
 
                 System.out.println(finalurl); // 테스트용 코드
@@ -75,8 +75,10 @@ public class CurrentModule_Class {
                 JSONArray legs = obj.getJSONArray("predictions");
                 for(int i = 0; i < legs.length(); i++){
                     JSONObject leg = legs.getJSONObject(i);
-                    placename.add(leg.getString("description"));
-                    placeid.add(leg.getString("place_id"));
+                    if(placeid != null) {
+                        placename.add(leg.getString("description"));
+                        placeid.add(leg.getString("place_id"));
+                    }
                 }
                 return placeid.get(0);
             }

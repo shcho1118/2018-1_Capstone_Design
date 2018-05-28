@@ -81,11 +81,22 @@
             android:layout_marginLeft="@dimen/activity_margin"
             android:layout_marginRight="@dimen/activity_margin" />
 
+        <CheckBox
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/location_description"
+            android:text="위치기반 자동알림 사용"
+            android:textColor="#6d6e6e"
+            android:id="@+id/location_check"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"/>
+
+
         <com.simplemobiletools.commons.views.MyEditText
             android:id="@+id/event_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/location_description"
+            android:layout_below="@+id/location_check"
             android:layout_marginLeft="@dimen/activity_margin"
             android:layout_marginRight="@dimen/activity_margin"
             android:layout_marginTop="@dimen/activity_margin"

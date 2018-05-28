@@ -1,6 +1,7 @@
 package com.simplemobiletools.calendar.activities
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
@@ -25,9 +26,6 @@ import kotlinx.android.synthetic.main.activity_event.*
 import org.joda.time.DateTime
 import java.util.*
 import java.util.regex.Pattern
-import android.widget.Toast
-import android.content.DialogInterface
-import android.app.AlertDialog;
 
 
 
@@ -146,6 +144,9 @@ class EventActivity : SimpleActivity() {
         event_description.setText(mEvent.description)
         event_description.movementMethod = LinkMovementMethod.getInstance()
 
+        if(mEvent.check_location == 1)
+            location_check.isChecked = true
+
         mReminder1Minutes = mEvent.reminder1Minutes
         mReminder2Minutes = mEvent.reminder2Minutes
         mReminder3Minutes = mEvent.reminder3Minutes
@@ -154,6 +155,7 @@ class EventActivity : SimpleActivity() {
         mRepeatRule = mEvent.repeatRule
         mEventTypeId = mEvent.eventType
         mEventCalendarId = mEvent.getCalDAVCalendarId()
+        locationId = mEvent.locat_placeid
         checkRepeatTexts(mRepeatInterval)
     }
 
@@ -400,11 +402,16 @@ class EventActivity : SimpleActivity() {
     private fun updateReminder2Text() {
         event_reminder_2.apply {
             beGoneIf(mReminder1Minutes == REMINDER_OFF)
-            if (mReminder2Minutes == REMINDER_OFF) {
+            if (mReminder2Minutes == REMINDER_OFF && mEvent.check_location == 0) {
                 text = resources.getString(R.string.add_another_reminder)
                 alpha = 0.4f
                 mReminder3Minutes = REMINDER_OFF
-            } else {
+            }else if(mEvent.check_location == 1){
+                text = "위치기반 알림 사용 중"
+                alpha = 0.4f
+                mReminder3Minutes = REMINDER_OFF
+            }
+            else {
                 text = getFormattedMinutes(mReminder2Minutes)
                 alpha = 1f
             }
@@ -521,6 +528,7 @@ class EventActivity : SimpleActivity() {
         // 테스트 중인 코드
         val newlocatdescript = location_description.value
         val newlocatid = locationId
+        var checked_location = 0
 
         val newStartTS = mEventStartDateTime.withSecondOfMinute(0).withMillisOfSecond(0).seconds()
         val newEndTS = mEventEndDateTime.withSecondOfMinute(0).withMillisOfSecond(0).seconds()
@@ -551,6 +559,12 @@ class EventActivity : SimpleActivity() {
         val reminder2 = reminders.getOrElse(1, { REMINDER_OFF })
         val reminder3 = reminders.getOrElse(2, { REMINDER_OFF })
 
+        if(location_check.isChecked && newlocatid != ""){
+            checked_location = 1
+        } else {
+            checked_location = 0
+        }
+
         config.apply {
             defaultReminderMinutes = reminder1
             defaultReminderMinutes2 = reminder2
@@ -578,6 +592,7 @@ class EventActivity : SimpleActivity() {
             location = event_location.value
             locat_description = newlocatdescript
             locat_placeid = newlocatid
+            check_location = checked_location
         }
 
         // recreate the event if it was moved in a different CalDAV calendar

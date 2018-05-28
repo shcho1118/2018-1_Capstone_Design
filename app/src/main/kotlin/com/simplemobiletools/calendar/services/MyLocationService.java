@@ -6,13 +6,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.simplemobiletools.calendar.helpers.DBHelper;
+import com.simplemobiletools.calendar.models.Event;
 
 import java.util.Calendar;
 
@@ -20,48 +20,70 @@ import java.util.Calendar;
 public class MyLocationService extends Service {
     public double longitude = 0;
     public double latitude = 0;
+    private LocationManager mLocationManager = null;
+    private int timer = 280;
+
+    private class LocationListener implements android.location.LocationListener {
+        Location mLastLocation;
+        private String TAG = "LocationListener";
+
+        public LocationListener(String provider) {
+            mLastLocation = new Location(provider);
+        }
+
+        @Override
+        public void onLocationChanged(Location location) {
+            timer = timer + 20;
+            mLastLocation.set(location);
+            longitude = location.getLongitude();
+            latitude = location.getLatitude();
+            Log.d(TAG, "현재 위치 : " + longitude + ", " + latitude + " timer : " + timer);
+            if(timer >= 300){
+                timer = 0;
+                testfun();
+            }
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            Log.e(TAG, "onProviderDisabled: " + provider);
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            Log.e(TAG, "onProviderEnabled: " + provider);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+            Log.e(TAG, "onProviderEnabled: " + provider);
+        }
+    }
+
+    private void initializeLocationManager() {
+        Log.e("Location Manager", "initialize LocationManager");
+        if (mLocationManager == null) {
+            mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        }
+    }
+
+    LocationListener mLocationListeners = new LocationListener(LocationManager.NETWORK_PROVIDER);
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-
-        try {
-            LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-            LocationListener locationListener = new LocationListener() {
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-                }
-
-                @Override
-                public void onProviderEnabled(String provider) {
-                }
-
-                @Override
-                public void onProviderDisabled(String provider) {
-                }
-
-                @Override
-                public void onLocationChanged(Location location) {
-                    longitude = location.getLongitude();
-                    latitude = location.getLatitude();
-                    Log.d("Location Service : ", "현재 위치 : " + longitude + ", " + latitude );
-
-                    updateTargetEventTime();
-                    testfun();
-                }
-            };
-
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000*60*20, 0, locationListener);
-            Log.d("MyLocationService","LocationManager가 실행이 되었어요");
-
+        initializeLocationManager();
+        try{
+            Log.e("Location onCreate", "onCreate입니다.");
+            mLocationManager.requestLocationUpdates(
+                    LocationManager.NETWORK_PROVIDER, 3 , 0, mLocationListeners); //, Looper.getMainLooper());
+        } catch (java.lang.SecurityException ex) {
+            Log.i("Location onCreate", "fail to request location update, ignore", ex);
+        } catch (IllegalArgumentException ex) {
+            Log.d("Location onCreate", "network provider does not exist, " + ex.getMessage());
         }
-        catch(SecurityException e){
-            longitude = 0;
-            latitude = 0;
-            Log.d("MyLocationService Error","위치 정보를 가져오지 못했어요");
-        }
-
-        return START_REDELIVER_INTENT;
+        return START_STICKY;
     }
 
     @Override
@@ -73,24 +95,25 @@ public class MyLocationService extends Service {
     }
 
     @Override
+    public void onCreate(){
+
+    }
+
+    @Override
     public void onDestroy() {
+        Log.e("Location onDestroy", "onDestroy입니다.");
         longitude = 0;
         latitude = 0;
         super.onDestroy();
-    }
-
-    public void updateTargetEventTime(){
-        try{
-            // Target Event를 불러오는 함수
-            // for(Target Event 수 만큼){
-            // Target Event들의 시간을 계산하는 함수
-            // Target Event들의 알람 시간을 DB에 적용하는 함수
-            // }
-        }
-        catch(Exception e) {
-
+        if (mLocationManager != null) {
+            try {
+                mLocationManager.removeUpdates(mLocationListeners);
+            } catch (Exception ex) {
+                Log.i("Location Destroy", "fail to remove location listners, ignore", ex);
+            }
         }
     }
+
 
     // 유지성을 이미 이 부분에서 갖다버렸습니다ㅓ ㅠㅠ
     // 조건에 맞는 이벤트를 찾아 알람 시간을 갱신해주는 메서드입니다.
@@ -110,13 +133,14 @@ public class MyLocationService extends Service {
                     String eventTitle = cursor1.getString(3);
                     String eventPlaceID = cursor1.getString(18);
                     int reminderTime = cursor1.getInt(5);
+                    int checked = cursor1.getInt(19);
                     // DB의 Start Time은 1초 단위고 여기선 1/1000 단위라 단위를 맞추어주기 위함이다.
                     long startTime2 = ((long) startTime) * 1000;
                     long lefttime = startTime2 - now;
                     int remaintime = 0;
 
-                    // 만약 설정이 거리 기반으로 설정되어 있고 8시간 안에 일어날 사건이라면
-                    if(/*reminderTime == -2 && */ (lefttime <= 60000 * 60 * 8 && lefttime > 0) && eventPlaceID != "") {
+                    // 만약 설정이 거리 기반으로 설정되어 있고 8시간 안에 일어날 사건이고 알람이 울린 시간이 지났다면
+                    if(checked == 1 && (lefttime <= 60000 * 60 * 8 && (lefttime/60000) > reminderTime) && eventPlaceID != null) {
                         if(longitude != 0 && latitude != 0){
                             AskGoogle askGoogle = new AskGoogle(eventPlaceID, longitude, latitude);
                             if(askGoogle.GetResult() != 0){
@@ -125,9 +149,13 @@ public class MyLocationService extends Service {
                             }
                         }
                         // 거리 계산하는 프로그램이 만든 결과를 reminder minute로 만든다.
+                        if((lefttime/60000) - remaintime/60 <= 0)
+                            remaintime = (int)(lefttime/60000) - 2;
                         db.execSQL("UPDATE events SET reminder_minutes = " + remaintime/60 + " WHERE id = " + eventNo);
+                        Event mEvent = dbHelper.getEventWithId(eventNo);
+                        dbHelper.update(mEvent, true, null);
                     }
-                    Log.d("Location Test", "Event = " + eventTitle + startTime + ", reminderTime " + reminderTime);
+                    Log.d("Location Test", "Event = " + eventTitle + startTime + ", reminderTime " + reminderTime + " PLACEID : "+eventPlaceID);
                     if(cursor1.isLast())
                         break;
                     else
@@ -150,3 +178,5 @@ public class MyLocationService extends Service {
 // https://okky.kr/article/366824
 // DB 커서를 다뤄보아요!(아래)
 // http://ssunno.tistory.com/4
+
+//https://stackoverflow.com/questions/28535703/best-way-to-get-user-gps-location-in-background-in-android
