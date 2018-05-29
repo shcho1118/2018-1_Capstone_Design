@@ -1,5 +1,6 @@
 package com.simplemobiletools.calendar.services;
 
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -90,8 +91,11 @@ public class ProjectorService extends Service {
             FileOutputStream png = openFileOutput(IMAGE_NAME, MODE_PRIVATE);
             latestBmp.get().compress(Bitmap.CompressFormat.PNG, 100, png);
             png.close();
-            Intent cropActivity = new Intent(this, CropActivity.class);
-            startActivity(cropActivity);
+            PendingIntent cropActivity = PendingIntent.getActivity(this,
+                    -2,
+                    new Intent(this, CropActivity.class),
+                    0);
+            cropActivity.send();
         } catch (Exception e) {
             Log.e("ProjectorService", "Capture is failed", e);
         } finally {

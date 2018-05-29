@@ -21,6 +21,7 @@ import com.google.api.services.vision.v1.model.EntityAnnotation;
 import com.google.api.services.vision.v1.model.Feature;
 import com.google.api.services.vision.v1.model.Image;
 import com.simplemobiletools.calendar.BuildConfig;
+import com.simplemobiletools.calendar.activities.EventActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,6 +52,9 @@ public class ImageToText {
     private static final String TAG = ImageToText.class.getSimpleName();
     private static Context context;
     private Class targetClass;
+
+    private static JSONObject json_result;
+
 
     public ImageToText(Context context, Class targetClass) {
         this.context = context;
@@ -156,7 +160,7 @@ public class ImageToText {
 
                 String string = sb.toString();
                 JSONObject jsonObj = new JSONObject(string);
-
+                json_result = jsonObj;
                 return jsonObj.toString(4);
             } else {
                 System.out.println("HTTP_NOT_OK");
@@ -296,6 +300,8 @@ public class ImageToText {
         @Override
         protected void onPostExecute(String result) { // 백그라운드 스레드의 작업을 완료한 후 실행하는 부분
             Save_jsonFiles(result);
+            ExtractTimeLocation extractTimeLocation = new ExtractTimeLocation(context, EventActivity.class, json_result);
+            extractTimeLocation.analysisCode();
         }
     }
 }
