@@ -87,11 +87,6 @@ public class ExtractRule2 {
                             isFind_loc = true;
                         }
 
-                        if (type.equals("ARGM-TMP")) {
-                            setParsedTime(text);
-                            isFind_time = true;
-                        }
-
                         if (type.equals("ARG1")) {
                             parsedDescription += text;
                         }

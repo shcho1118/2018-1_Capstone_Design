@@ -25,12 +25,12 @@ public class ExtractRule1 {
 
     private static final Set<String> TTA_TIME_TI =
             new HashSet<>(Arrays.asList(
-                    "TI_OTHERS", "TI_DURATION", "TI_HOUR", "TI_MINUTE", "TI_SECOND"
+                    "TI_OTHERS", "TI_HOUR", "TI_MINUTE", "TI_SECOND"
             ));
 
     private static final Set<String> TTA_TIME_DT =
             new HashSet<>(Arrays.asList(
-                    "DT_OTHERS", "DT_DURATION", "DT_DAY", "DT_MONTH", "DT_YEAR", "DT_SEASON"
+                    "DT_OTHERS", "DT_DAY", "DT_MONTH", "DT_YEAR"
             ));
 
     private static final Set<String> TTA_LOC =

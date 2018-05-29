@@ -1,6 +1,7 @@
 package com.simplemobiletools.calendar.extras;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -30,8 +31,7 @@ public class ExtractTimeLocation {
         extractRule1.analysisCode();
         extractRule2.analysisCode();
         parsedLoc = extractRule1.getParsedLoc();
-        if(parsedLoc == null)
-            parsedLoc = extractRule2.getParsedLoc();
+        if(parsedLoc == null) parsedLoc = extractRule2.getParsedLoc();
         parsedTime = extractRule1.getParsedTime();
         parsedDescription = extractRule2.getParsedDescription();
         parsedDuration = extractRule2.getParsedDuration();
@@ -40,5 +40,15 @@ public class ExtractTimeLocation {
         Log.d(TAG, "parsedTime is " + parsedTime.getTime().toString());
         Log.d(TAG, "parsedDescription is " + parsedDescription);
         Log.d(TAG, "parsedDuration is " + String .valueOf(parsedDuration));
+
+        Intent targetActivity = new Intent(mContext, mClass);
+        targetActivity.setAction(Intent.ACTION_INSERT);
+        long startTs = parsedTime.getTimeInMillis();
+        long endTs = startTs + parsedDuration * 60 * 1000;
+        targetActivity.putExtra("beginTime", startTs);
+        targetActivity.putExtra("endTime", endTs);
+        targetActivity.putExtra("eventLocation", parsedLoc);
+        targetActivity.putExtra("description", parsedDescription);
+        mContext.startActivity(targetActivity);
     }
 }
