@@ -301,7 +301,7 @@ public class ImageToText {
         protected void onPostExecute(String result) { // 백그라운드 스레드의 작업을 완료한 후 실행하는 부분
             Save_jsonFiles(result);
             ExtractTimeLocation extractTimeLocation = new ExtractTimeLocation(context, EventActivity.class, json_result);
-            extractTimeLocation.analysisCode();
+            extractTimeLocation.generateNewEvent();
         }
     }
 }
