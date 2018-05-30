@@ -11,6 +11,7 @@ import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
+import android.view.View
 import com.simplemobiletools.calendar.R
 import com.simplemobiletools.calendar.dialogs.*
 import com.simplemobiletools.calendar.extensions.*
@@ -141,8 +142,12 @@ class EventActivity : SimpleActivity() {
         event_title.setText(mEvent.title)
         event_location.setText(mEvent.location)
         location_description.setText(mEvent.locat_description).toString()
+        event_category.setText(mEvent.category)
         event_description.setText(mEvent.description)
         event_description.movementMethod = LinkMovementMethod.getInstance()
+        event_finish.setChecked(mEvent.isFinished)
+        event_finish.setVisibility(View.VISIBLE)
+        event_finish_description.setVisibility(View.VISIBLE)
 
         if(mEvent.check_location == 1)
             location_check.isChecked = true
@@ -174,6 +179,7 @@ class EventActivity : SimpleActivity() {
 
             event_title.setText(intent.getStringExtra("title"))
             event_location.setText(intent.getStringExtra("eventLocation"))
+            event_category.setText(intent.getStringExtra("category"))
             event_description.setText(intent.getStringExtra("description"))
             event_description.movementMethod = LinkMovementMethod.getInstance()
         } else {
@@ -593,6 +599,8 @@ class EventActivity : SimpleActivity() {
             locat_description = newlocatdescript
             locat_placeid = newlocatid
             check_location = checked_location
+            category = event_category.value
+            isFinished = event_finish.isChecked()
         }
 
         // recreate the event if it was moved in a different CalDAV calendar

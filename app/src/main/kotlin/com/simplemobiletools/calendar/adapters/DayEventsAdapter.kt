@@ -61,6 +61,11 @@ class DayEventsAdapter(activity: SimpleActivity, val events: ArrayList<Event>, r
 
     private fun setupView(view: View, event: Event) {
         view.apply {
+            event_item_finish.setChecked(event.isFinished)
+            event_item_finish.setOnClickListener {
+                event.isFinished = event_item_finish.isChecked()
+                context!!.dbHelper.update(event, true)
+            }
             event_section_title.text = event.title
             event_item_description.text = if (replaceDescriptionWithLocation) event.location else event.description
             event_item_start.text = if (event.getIsAllDay()) allDayString else Formatter.getTimeFromTS(context, event.startTS)
