@@ -96,7 +96,7 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
         dbHelper
 
         checkWhatsNewDialog()
-        calendar_fab.beVisibleIf(config.storedView != YEARLY_VIEW)
+        calendar_fab.beVisibleIf(config.storedView != YEARLY_VIEW && config.storedView != STATISTICS_VIEW)
         calendar_fab.setOnClickListener {
             launchNewEventIntent(currentFragments.last().getNewEventDayCode())
         }
@@ -322,10 +322,11 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
                 RadioItem(WEEKLY_VIEW, getString(R.string.weekly_view)),
                 RadioItem(MONTHLY_VIEW, getString(R.string.monthly_view)),
                 RadioItem(YEARLY_VIEW, getString(R.string.yearly_view)),
-                RadioItem(EVENTS_LIST_VIEW, getString(R.string.simple_event_list)))
+                RadioItem(EVENTS_LIST_VIEW, getString(R.string.simple_event_list)),
+                RadioItem(STATISTICS_VIEW, getString(R.string.schedule_statistics)))
 
         RadioGroupDialog(this, items, config.storedView) {
-            calendar_fab.beVisibleIf(it as Int != YEARLY_VIEW)
+            calendar_fab.beVisibleIf(it as Int != YEARLY_VIEW && it as Int != STATISTICS_VIEW)
             resetActionBarTitle()
             closeSearch()
             updateView(it)
@@ -533,7 +534,7 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
     }
 
     private fun updateView(view: Int) {
-        calendar_fab.beVisibleIf(view != YEARLY_VIEW)
+        calendar_fab.beVisibleIf(view != YEARLY_VIEW && view != STATISTICS_VIEW)
         config.storedView = view
         updateViewPager()
         if (goToTodayButton?.isVisible == true) {
@@ -603,6 +604,7 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
         MONTHLY_VIEW -> MonthFragmentsHolder()
         YEARLY_VIEW -> YearFragmentsHolder()
         EVENTS_LIST_VIEW -> EventListFragment()
+        STATISTICS_VIEW -> StatisticsFragment()
         else -> WeekFragmentsHolder()
     }
 
@@ -614,7 +616,7 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
             refreshEvents()
             updateActionBarTitle()
         }
-        calendar_fab.beGoneIf(currentFragments.size == 1 && config.storedView == YEARLY_VIEW)
+        calendar_fab.beGoneIf(currentFragments.size == 1 && (config.storedView == YEARLY_VIEW || config.storedView == STATISTICS_VIEW))
         supportActionBar?.setDisplayHomeAsUpEnabled(currentFragments.size > 1)
     }
 

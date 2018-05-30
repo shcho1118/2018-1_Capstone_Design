@@ -10,6 +10,7 @@ import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
+import android.view.View
 import com.simplemobiletools.calendar.R
 import com.simplemobiletools.calendar.dialogs.*
 import com.simplemobiletools.calendar.extensions.*
@@ -132,8 +133,12 @@ class EventActivity : SimpleActivity() {
         mEventEndDateTime = Formatter.getDateTimeFromTS(realStart + duration)
         event_title.setText(mEvent.title)
         event_location.setText(mEvent.location)
+        event_category.setText(mEvent.category)
         event_description.setText(mEvent.description)
         event_description.movementMethod = LinkMovementMethod.getInstance()
+        event_finish.setChecked(mEvent.isFinished)
+        event_finish.setVisibility(View.VISIBLE)
+        event_finish_description.setVisibility(View.VISIBLE)
 
         mReminder1Minutes = mEvent.reminder1Minutes
         mReminder2Minutes = mEvent.reminder2Minutes
@@ -161,6 +166,7 @@ class EventActivity : SimpleActivity() {
 
             event_title.setText(intent.getStringExtra("title"))
             event_location.setText(intent.getStringExtra("eventLocation"))
+            event_category.setText(intent.getStringExtra("category"))
             event_description.setText(intent.getStringExtra("description"))
             event_description.movementMethod = LinkMovementMethod.getInstance()
         } else {
@@ -561,6 +567,8 @@ class EventActivity : SimpleActivity() {
             lastUpdated = System.currentTimeMillis()
             source = newSource
             location = event_location.value
+            category = event_category.value
+            isFinished = event_finish.isChecked()
         }
 
         // recreate the event if it was moved in a different CalDAV calendar

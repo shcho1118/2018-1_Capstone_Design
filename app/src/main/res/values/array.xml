@@ -19,4 +19,19 @@
         <item>@string/monthly</item>
         <item>@string/yearly</item>
     </string-array>
+
+    <string-array name="month_array">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+    </string-array>
 </resources>

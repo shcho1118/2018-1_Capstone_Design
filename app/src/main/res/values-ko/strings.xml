@@ -3,14 +3,17 @@
     <string name="app_name">심플 캘린더</string>
     <string name="app_launcher_name">캘린더</string>
     <string name="change_view">보기 변경</string>
-    <string name="daily_view">Daily view</string>
+    <string name="daily_view">일간 보기</string>
     <string name="weekly_view">주간 보기</string>
     <string name="monthly_view">월간 보기</string>
     <string name="yearly_view">연간 보기</string>
-    <string name="simple_event_list">간단한 이벤트 목록</string>
+    <string name="simple_event_list">타임라인</string>
+    <string name="schedule_statistics">일정 통계</string>
     <string name="no_upcoming_events">다가올 이벤트가 없는 것 같습니다.</string>
     <string name="add_some_events">아래의 더하기 버튼을 눌러 추가할 수 있습니다.</string>
     <string name="go_to_today">오늘로 이동</string>
+    <string name="schedule_performance">일정 수행도 :</string>
+    <string name="schedule_proportion">일정 비중</string>
 
     <!-- Widget titles -->
     <string name="widget_monthly">월별 달력</string>
@@ -25,8 +28,8 @@
     <string name="event_added">이벤트가 성공적으로 추가되었습니다</string>
     <string name="event_updated">이벤트를 수정했습니다</string>
     <string name="filter_events_by_type">유형별 이벤트</string>
-    <string name="please_fill_location">Please fill in a location to be shown on a map</string>
-    <string name="public_event_notification_text">An event is upcoming</string>
+    <string name="please_fill_location">지도에 표시될 위치를 입력해주세요</string>
+    <string name="public_event_notification_text">곧 이벤트가 있습니다</string>
 
     <!-- Event Repetition -->
     <string name="repetition">반복</string>
@@ -92,7 +95,7 @@
     <string name="reminder">알림</string>
     <string name="before">전</string>
     <string name="add_another_reminder">다른 알림 추가</string>
-    <string name="event_reminders">Event reminders</string>
+    <string name="event_reminders">이벤트 리마인더</string>
 
     <!-- Export / Import -->
     <string name="import_events">이벤트들 가져 오기</string>
@@ -106,9 +109,11 @@
 
     <!-- Event details -->
     <string name="title">제목</string>
-    <string name="location">Location</string>
+    <string name="location">위치</string>
+    <string name="category">카테고리</string>
     <string name="description">설명</string>
     <string name="all_day">하루 종일</string>
+    <string name="event_finish_description">완료됨</string>
 
     <!-- Weekly view -->
     <string name="week">주</string>
@@ -146,12 +151,12 @@
     <string name="no_ringtone_selected">없음</string>
     <string name="day_end_before_start">요일은 시작하기 전에 끝날 수 없습니다</string>
     <string name="caldav_sync">CalDAV 동기화</string>
-    <string name="event_lists">Event lists</string>
+    <string name="event_lists">타임라인</string>
     <string name="display_past_events">과거의 이벤트 표시</string>
-    <string name="replace_description_with_location">Replace event description with location</string>
-    <string name="delete_all_events">Delete all events</string>
-    <string name="delete_all_events_confirmation">Are you sure you want to delete all events? This will leave your event types and other settings intact.</string>
-    <string name="show_a_grid">Show a grid</string>
+    <string name="replace_description_with_location">이벤트 설명을 위치로 대체</string>
+    <string name="delete_all_events">모든 이벤트 삭제</string>
+    <string name="delete_all_events_confirmation">정말 모든 이벤트를 삭제하시겠습니까? This will leave your event types and other settings intact.</string>
+    <string name="show_a_grid">그리드 표시</string>
 
     <!-- CalDAV sync -->
     <string name="caldav">CalDAV</string>
