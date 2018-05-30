@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
@@ -825,6 +826,7 @@ class EventActivity : SimpleActivity() {
         event_type_image.applyColorFilter(textColor)
         event_caldav_calendar_image.applyColorFilter(textColor)
         event_show_on_map.applyColorFilter(getAdjustedPrimaryColor())
+        find_location.applyColorFilter(textColor)
     }
 
 

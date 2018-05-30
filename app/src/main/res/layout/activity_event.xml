@@ -91,13 +91,12 @@
             android:paddingRight="@dimen/small_margin"
             android:src="@drawable/ic_place"/>
 
-        <TextView
+        <com.simplemobiletools.commons.views.MyTextView
             android:id="@+id/location_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/event_location"
             android:hint="location_description"
-            android:textColor="#e6e9e9"
             android:layout_marginLeft="@dimen/activity_margin"
             android:layout_marginRight="@dimen/activity_margin" />
 
