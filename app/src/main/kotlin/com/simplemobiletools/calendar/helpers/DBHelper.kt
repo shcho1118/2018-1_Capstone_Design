@@ -20,7 +20,7 @@ import org.joda.time.DateTime
 import java.util.*
 import kotlin.collections.ArrayList
 
-class DBHelper private constructor(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
+class DBHelper public constructor(val context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
     private val MAIN_TABLE_NAME = "events"
     private val COL_ID = "id"
     private val COL_START_TS = "start_ts"
@@ -38,6 +38,9 @@ class DBHelper private constructor(val context: Context) : SQLiteOpenHelper(cont
     private val COL_LAST_UPDATED = "last_updated"
     private val COL_EVENT_SOURCE = "event_source"
     private val COL_LOCATION = "location"
+    private val COL_LOCATION_DESCRIPTION = "location_description"
+    private val COL_LOCATION_ID = "location_id"
+    private val COL_CHECK_LOCATION = "check_location"
     private val COL_CATEGORY = "category"
     private val COL_IS_FINISHED = "is_finished"
 
@@ -63,10 +66,14 @@ class DBHelper private constructor(val context: Context) : SQLiteOpenHelper(cont
     private val COL_PARENT_EVENT_ID = "event_parent_id"
     private val COL_CHILD_EVENT_ID = "event_child_id"
 
+    private val MYLOCATION_TABLE_NAME = "my_location_table"
+    private val MYLONGITUDE = "my_longitude"
+    private val MYLATITUDE = "my_latitude"
+
     private val mDb: SQLiteDatabase = writableDatabase
 
     companion object {
-        private const val DB_VERSION = 21
+        private const val DB_VERSION = 24
         const val DB_NAME = "events.db"
         const val REGULAR_EVENT_TYPE_ID = 1
         var dbInstance: DBHelper? = null
@@ -84,11 +91,12 @@ class DBHelper private constructor(val context: Context) : SQLiteOpenHelper(cont
                 "$COL_TITLE TEXT, $COL_DESCRIPTION TEXT, $COL_REMINDER_MINUTES INTEGER, $COL_REMINDER_MINUTES_2 INTEGER, $COL_REMINDER_MINUTES_3 INTEGER, " +
                 "$COL_IMPORT_ID TEXT, $COL_FLAGS INTEGER, $COL_EVENT_TYPE INTEGER NOT NULL DEFAULT $REGULAR_EVENT_TYPE_ID, " +
                 "$COL_PARENT_EVENT_ID INTEGER, $COL_OFFSET TEXT, $COL_IS_DST_INCLUDED INTEGER, $COL_LAST_UPDATED INTEGER, $COL_EVENT_SOURCE TEXT, " +
-                "$COL_LOCATION TEXT, $COL_CATEGORY TEXT, $COL_IS_FINISHED INTEGER)")
+                "$COL_LOCATION TEXT, $COL_LOCATION_DESCRIPTION TEXT, $COL_LOCATION_ID TEXT, $COL_CHECK_LOCATION INTEGER, $COL_CATEGORY TEXT, $COL_IS_FINISHED INTEGER)")
 
         createMetaTable(db)
         createTypesTable(db)
         createExceptionsTable(db)
+        createMyLocationTable(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -179,11 +187,26 @@ class DBHelper private constructor(val context: Context) : SQLiteOpenHelper(cont
             db.execSQL("ALTER TABLE $MAIN_TABLE_NAME ADD COLUMN $COL_LOCATION TEXT DEFAULT ''")
         }
 
-        if (oldVersion < 20) {
+
+        // 이부분 추가
+        if(oldVersion < 20) {
+            db.execSQL("ALTER TABLE $MAIN_TABLE_NAME ADD COLUMN $COL_LOCATION_DESCRIPTION TEXT DEFAULT ''")
+            db.execSQL("ALTER TABLE $MAIN_TABLE_NAME ADD COLUMN $COL_LOCATION_ID TEXT DEFAULT ''")
+        }
+
+        if(oldVersion < 21) {
+            db.execSQL("CREATE TABLE $MYLOCATION_TABLE_NAME ($MYLONGITUDE INTEGER, $MYLATITUDE INTEGER)")
+        }
+
+        if(oldVersion < 22) {
+            db.execSQL("ALTER TABLE $MAIN_TABLE_NAME ADD COLUMN $COL_CHECK_LOCATION INTEGER NOT NULL DEFAULT 0")
+        }
+
+        if (oldVersion < 23) {
             db.execSQL("ALTER TABLE $MAIN_TABLE_NAME ADD COLUMN $COL_CATEGORY TEXT DEFAULT ''")
         }
 
-        if (oldVersion < 21) {
+        if (oldVersion < 24) {
             db.execSQL("ALTER TABLE $MAIN_TABLE_NAME ADD COLUMN $COL_IS_FINISHED INTEGER NOT NULL DEFAULT 0")
         }
     }
@@ -202,6 +225,10 @@ class DBHelper private constructor(val context: Context) : SQLiteOpenHelper(cont
     private fun createExceptionsTable(db: SQLiteDatabase) {
         db.execSQL("CREATE TABLE $EXCEPTIONS_TABLE_NAME ($COL_EXCEPTION_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COL_PARENT_EVENT_ID INTEGER, " +
                 "$COL_OCCURRENCE_TIMESTAMP INTEGER, $COL_OCCURRENCE_DAYCODE INTEGER, $COL_CHILD_EVENT_ID INTEGER)")
+    }
+
+    private fun createMyLocationTable(db: SQLiteDatabase) {
+        db.execSQL("CREATE TABLE $MYLOCATION_TABLE_NAME ($MYLONGITUDE INTEGER, $MYLATITUDE INTEGER)")
     }
 
     private fun addRegularEventType(db: SQLiteDatabase) {
@@ -304,6 +331,9 @@ class DBHelper private constructor(val context: Context) : SQLiteOpenHelper(cont
             put(COL_LAST_UPDATED, event.lastUpdated)
             put(COL_EVENT_SOURCE, event.source)
             put(COL_LOCATION, event.location)
+            put(COL_LOCATION_DESCRIPTION, event.locat_description)
+            put(COL_LOCATION_ID, event.locat_placeid)
+            put(COL_CHECK_LOCATION, event.check_location)
             put(COL_CATEGORY, event.category)
             put(COL_IS_FINISHED, if (event.isFinished) 1 else 0)
         }
@@ -883,7 +913,7 @@ class DBHelper private constructor(val context: Context) : SQLiteOpenHelper(cont
     private val allColumns: Array<String>
         get() = arrayOf("$MAIN_TABLE_NAME.$COL_ID", COL_START_TS, COL_END_TS, COL_TITLE, COL_DESCRIPTION, COL_REMINDER_MINUTES, COL_REMINDER_MINUTES_2,
                 COL_REMINDER_MINUTES_3, COL_REPEAT_INTERVAL, COL_REPEAT_RULE, COL_IMPORT_ID, COL_FLAGS, COL_REPEAT_LIMIT, COL_EVENT_TYPE, COL_OFFSET,
-                COL_IS_DST_INCLUDED, COL_LAST_UPDATED, COL_EVENT_SOURCE, COL_LOCATION, COL_CATEGORY, COL_IS_FINISHED)
+                COL_IS_DST_INCLUDED, COL_LAST_UPDATED, COL_EVENT_SOURCE, COL_LOCATION, COL_LOCATION_DESCRIPTION, COL_LOCATION_ID, COL_CHECK_LOCATION, COL_CATEGORY, COL_IS_FINISHED)
 
     private fun fillEvents(cursor: Cursor?): List<Event> {
         val eventTypeColors = SparseIntArray()
@@ -914,6 +944,9 @@ class DBHelper private constructor(val context: Context) : SQLiteOpenHelper(cont
                     val lastUpdated = cursor.getLongValue(COL_LAST_UPDATED)
                     val source = cursor.getStringValue(COL_EVENT_SOURCE)
                     val location = cursor.getStringValue(COL_LOCATION)
+                    val locationDescription = cursor.getStringValue(COL_LOCATION_DESCRIPTION)
+                    val locationId = cursor.getStringValue(COL_LOCATION_ID)
+                    val checkLocation = cursor.getIntValue(COL_CHECK_LOCATION)
                     val category = cursor.getStringValue(COL_CATEGORY)
                     val isFinished = cursor.getIntValue(COL_IS_FINISHED) == 1
                     val color = eventTypeColors[eventType]
@@ -930,12 +963,16 @@ class DBHelper private constructor(val context: Context) : SQLiteOpenHelper(cont
 
                     val event = Event(id, startTS, endTS, title, description, reminder1Minutes, reminder2Minutes, reminder3Minutes,
                             repeatInterval, importId, flags, repeatLimit, repeatRule, eventType, ignoreEventOccurrences, offset, isDstIncluded,
-                            0, lastUpdated, source, color, location, category, isFinished)
+                            0, lastUpdated, source, color, location, locationDescription, locationId, checkLocation, category, isFinished)
                     events.add(event)
                 } while (cursor.moveToNext())
             }
         }
         return events
+    }
+
+    fun SetLongitudeLatitude(db: SQLiteDatabase, lo : Double, la : Double){
+        db.execSQL(String.format("INSERT INTO $MYLOCATION_TABLE_NAME($MYLONGITUDE, $MYLATITUDE) VALUES(%d, %d)",lo, la))
     }
 
     fun getEventTypes(callback: (types: ArrayList<EventType>) -> Unit) {

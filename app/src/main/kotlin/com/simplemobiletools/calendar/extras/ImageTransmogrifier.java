@@ -73,11 +73,11 @@ public class ImageTransmogrifier implements ImageReader.OnImageAvailableListener
                 image.close();
             }
 
-            Bitmap cropped = Bitmap.createBitmap(latestBitmap, 0, 0,
+            Bitmap original = Bitmap.createBitmap(latestBitmap, 0, 0,
                     width, height);
 
             //cropped.compress(Bitmap.CompressFormat.PNG, 100, newPng);
-            svc.updateImage(cropped);
+            svc.updateImage(original);
         }
     }
 

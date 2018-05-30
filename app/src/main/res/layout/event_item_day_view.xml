@@ -63,7 +63,7 @@
             android:layout_below="@+id/event_section_title"
             android:layout_marginLeft="@dimen/activity_margin"
             android:layout_toLeftOf="@+id/event_item_color"
-            android:layout_toRightOf="@+id/event_item_start"
+            android:layout_toRightOf="@+id/event_item_end"
             android:alpha=".4"
             android:ellipsize="end"
             android:maxLines="1"

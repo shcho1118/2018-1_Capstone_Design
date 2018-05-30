@@ -30,6 +30,9 @@ android {
             signingConfig signingConfigs.release
         }
     }
+    buildTypes.each{
+        it.buildConfigField 'String', 'API_KEY', '"AIzaSyBlFog_UK8vB9cU8gX8W-3VQSgq-HVXIIw"'
+    }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -56,6 +59,12 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakCanaryVersion"
     releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion"
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.google.api-client:google-api-client-android:1.23.0' exclude module: 'httpclient'
+    implementation 'com.google.http-client:google-http-client-gson:1.23.0' exclude module: 'httpclient'
+    implementation 'com.google.apis:google-api-services-vision:v1-rev369-1.23.0'
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.7.+'
 }
 
 Properties props = new Properties()

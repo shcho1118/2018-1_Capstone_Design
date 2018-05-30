@@ -1,6 +1,7 @@
 package com.simplemobiletools.calendar.activities
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
@@ -27,6 +28,9 @@ import org.joda.time.DateTime
 import java.util.*
 import java.util.regex.Pattern
 
+
+
+
 class EventActivity : SimpleActivity() {
     private val LAT_LON_PATTERN = "^[-+]?([1-8]?\\d(\\.\\d+)?|90(\\.0+)?)([,;])\\s*[-+]?(180(\\.0+)?|((1[0-7]\\d)|([1-9]?\\d))(\\.\\d+)?)\$"
     private var mReminder1Minutes = 0
@@ -40,6 +44,7 @@ class EventActivity : SimpleActivity() {
     private var mEventOccurrenceTS = 0
     private var mEventCalendarId = STORED_LOCALLY_ONLY
     private var wasActivityInitialized = false
+    private var locationId = ""
 
     lateinit var mEventStartDateTime: DateTime
     lateinit var mEventEndDateTime: DateTime
@@ -79,6 +84,9 @@ class EventActivity : SimpleActivity() {
         updateEndTexts()
         updateEventType()
         updateCalDAVCalendar()
+
+        // 도착장소 id를 반환하는 거..
+        find_location.setOnClickListener{ findLocation() }
 
         event_show_on_map.setOnClickListener { showOnMap() }
         event_start_date.setOnClickListener { setupStartDate() }
@@ -133,12 +141,16 @@ class EventActivity : SimpleActivity() {
         mEventEndDateTime = Formatter.getDateTimeFromTS(realStart + duration)
         event_title.setText(mEvent.title)
         event_location.setText(mEvent.location)
+        location_description.setText(mEvent.locat_description).toString()
         event_category.setText(mEvent.category)
         event_description.setText(mEvent.description)
         event_description.movementMethod = LinkMovementMethod.getInstance()
         event_finish.setChecked(mEvent.isFinished)
         event_finish.setVisibility(View.VISIBLE)
         event_finish_description.setVisibility(View.VISIBLE)
+
+        if(mEvent.check_location == 1)
+            location_check.isChecked = true
 
         mReminder1Minutes = mEvent.reminder1Minutes
         mReminder2Minutes = mEvent.reminder2Minutes
@@ -148,6 +160,7 @@ class EventActivity : SimpleActivity() {
         mRepeatRule = mEvent.repeatRule
         mEventTypeId = mEvent.eventType
         mEventCalendarId = mEvent.getCalDAVCalendarId()
+        locationId = mEvent.locat_placeid
         checkRepeatTexts(mRepeatInterval)
     }
 
@@ -395,11 +408,16 @@ class EventActivity : SimpleActivity() {
     private fun updateReminder2Text() {
         event_reminder_2.apply {
             beGoneIf(mReminder1Minutes == REMINDER_OFF)
-            if (mReminder2Minutes == REMINDER_OFF) {
+            if (mReminder2Minutes == REMINDER_OFF && mEvent.check_location == 0) {
                 text = resources.getString(R.string.add_another_reminder)
                 alpha = 0.4f
                 mReminder3Minutes = REMINDER_OFF
-            } else {
+            }else if(mEvent.check_location == 1){
+                text = "위치기반 알림 사용 중"
+                alpha = 0.4f
+                mReminder3Minutes = REMINDER_OFF
+            }
+            else {
                 text = getFormattedMinutes(mReminder2Minutes)
                 alpha = 1f
             }
@@ -513,6 +531,11 @@ class EventActivity : SimpleActivity() {
             return
         }
 
+        // 테스트 중인 코드
+        val newlocatdescript = location_description.value
+        val newlocatid = locationId
+        var checked_location = 0
+
         val newStartTS = mEventStartDateTime.withSecondOfMinute(0).withMillisOfSecond(0).seconds()
         val newEndTS = mEventEndDateTime.withSecondOfMinute(0).withMillisOfSecond(0).seconds()
 
@@ -542,6 +565,12 @@ class EventActivity : SimpleActivity() {
         val reminder2 = reminders.getOrElse(1, { REMINDER_OFF })
         val reminder3 = reminders.getOrElse(2, { REMINDER_OFF })
 
+        if(location_check.isChecked && newlocatid != ""){
+            checked_location = 1
+        } else {
+            checked_location = 0
+        }
+
         config.apply {
             defaultReminderMinutes = reminder1
             defaultReminderMinutes2 = reminder2
@@ -567,6 +596,9 @@ class EventActivity : SimpleActivity() {
             lastUpdated = System.currentTimeMillis()
             source = newSource
             location = event_location.value
+            locat_description = newlocatdescript
+            locat_placeid = newlocatid
+            check_location = checked_location
             category = event_category.value
             isFinished = event_finish.isChecked()
         }
@@ -793,5 +825,71 @@ class EventActivity : SimpleActivity() {
         event_type_image.applyColorFilter(textColor)
         event_caldav_calendar_image.applyColorFilter(textColor)
         event_show_on_map.applyColorFilter(getAdjustedPrimaryColor())
+    }
+
+
+    // 입력한 장소의 ID를 가져오는 함수에요.
+    private fun findLocation(){
+        if (event_location.value.isEmpty()) {
+            toast(R.string.please_fill_location)
+            return
+        }
+
+        val placeid = CurrentModule_Class().GetPlaceData(event_location.value)
+        if(placeid.GetPlaceName(0) == null){
+            toast("검색 결과가 없습니다.")
+            location_description.setText("No Found ㅠㅠㅠㅠ").toString()
+            return
+        }
+
+        val items = arrayOfNulls<CharSequence>(placeid.GetPlaceNum())
+        for(i in 0..(placeid.GetPlaceNum()-1)){
+            items.set(i,placeid.GetPlaceName(i))
+        }
+        val alertDialogBuilder = AlertDialog.Builder(this)
+
+        // 다이얼로그 셋팅 (제목, 선택시 행동, 취소버튼)
+        alertDialogBuilder.setTitle("장소를 선택해주세요")
+
+        alertDialogBuilder.setItems(items
+        ) { dialog, id ->
+            // 다이얼로그 중 사용자가 하나 선택하면 그 정보를 설정한다.
+            location_description.setText(items[id]).toString()
+            locationId = placeid.GetPlaceid(id)
+            dialog.dismiss()
+        }
+        alertDialogBuilder.setNeutralButton("Cancel"){dialog, which ->
+            dialog.cancel()
+        }
+
+        // 다이얼로그 생성
+        val alertDialog = alertDialogBuilder.create()
+
+        // 다이얼로그 보여주기
+        alertDialog.show()
+
+
+        //location_description.setText(placeid.GetPlaceName(0)).toString()
+        /*
+        val pattern = Pattern.compile(LAT_LON_PATTERN)
+        val locationValue = event_location.value
+        val uri = if (pattern.matcher(locationValue).find()) {
+            val delimiter = if (locationValue.contains(';')) ";" else ","
+            val parts = locationValue.split(delimiter)
+            val latitude = parts.first()
+            val longitude = parts.last()
+            Uri.parse("geo:$latitude,$longitude")
+        } else {
+            val location = Uri.encode(locationValue)
+            Uri.parse("geo:0,0?q=$location")
+        }
+
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
+        } else {
+            toast(R.string.no_app_found)
+        }
+        */
     }
 }

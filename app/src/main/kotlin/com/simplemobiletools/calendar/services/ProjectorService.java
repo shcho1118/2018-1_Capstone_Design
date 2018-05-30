@@ -1,5 +1,6 @@
 package com.simplemobiletools.calendar.services;
 
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.simplemobiletools.calendar.activities.CropActivity;
 import com.simplemobiletools.calendar.extras.ImageTransmogrifier;
 
 import java.io.FileOutputStream;
@@ -23,12 +25,12 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ProjectorService extends Service {
     public static final String EXTRA_RESULT_CODE = "resultCode";
     public static final String EXTRA_RESULT_INTENT = "resultIntent";
+    public static final String IMAGE_NAME = "ORIGINAL_IMAGE.png";
     static final int VIRT_DISPLAY_FLAGS =
             DisplayManager.VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY |
                     DisplayManager.VIRTUAL_DISPLAY_FLAG_PUBLIC;
     final private HandlerThread handlerThread = new HandlerThread(getClass().getSimpleName(),
             android.os.Process.THREAD_PRIORITY_BACKGROUND);
-    private final String IMAGE_NAME = "ORIGINAL_IMAGE.png";
     private MediaProjection projection;
     private VirtualDisplay vdisplay;
     private Handler handler;
@@ -89,6 +91,8 @@ public class ProjectorService extends Service {
             FileOutputStream png = openFileOutput(IMAGE_NAME, MODE_PRIVATE);
             latestBmp.get().compress(Bitmap.CompressFormat.PNG, 100, png);
             png.close();
+            Intent cropActivity = new Intent(this, CropActivity.class);
+            startActivity(cropActivity);
         } catch (Exception e) {
             Log.e("ProjectorService", "Capture is failed", e);
         } finally {
@@ -126,8 +130,8 @@ public class ProjectorService extends Service {
         return (handler);
     }
 
-    public void updateImage(Bitmap cropped) {
-        latestBmp.set(cropped);
+    public void updateImage(Bitmap original) {
+        latestBmp.set(original);
         stopSelf();
     }
 }
