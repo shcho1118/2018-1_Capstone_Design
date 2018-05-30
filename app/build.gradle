@@ -54,6 +54,8 @@ dependencies {
     implementation 'com.facebook.stetho:stetho:1.5.0'
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+    implementation files('libs/com.skt.Tmap_1.52.jar')
+    implementation files('libs/com.skt.Tmap_1.52.jar')
 
     implementation 'com.android.support:support-v4:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
