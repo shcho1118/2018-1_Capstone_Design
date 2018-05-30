@@ -42,7 +42,6 @@ public class MyLocationService extends Service {
                 timer = 0;
                 testfun();
             }
-
         }
 
         @Override
@@ -130,7 +129,6 @@ public class MyLocationService extends Service {
                 while(true) {
                     int eventNo = cursor1.getInt(0 );
                     int startTime = cursor1.getInt(1);
-                    String eventTitle = cursor1.getString(3);
                     String eventPlaceID = cursor1.getString(18);
                     int reminderTime = cursor1.getInt(5);
                     int checked = cursor1.getInt(19);
@@ -140,21 +138,32 @@ public class MyLocationService extends Service {
                     int remaintime = 0;
 
                     // 만약 설정이 거리 기반으로 설정되어 있고 8시간 안에 일어날 사건이고 알람이 울린 시간이 지났다면
-                    if(checked == 1 && (lefttime <= 60000 * 60 * 8 && (lefttime/60000) > reminderTime) && eventPlaceID != null) {
-                        if(longitude != 0 && latitude != 0){
-                            AskGoogle askGoogle = new AskGoogle(eventPlaceID, longitude, latitude);
-                            if(askGoogle.GetResult() != 0){
-                                remaintime = askGoogle.GetResult();
-                                Log.d("Location Test", "바뀐 이벤트 remaintime " + remaintime/60);
+                    if(checked != 0 && (lefttime <= 60000 * 60 * 8 && (lefttime/60000) > reminderTime) && eventPlaceID != null) {
+                        if(longitude != 0 && latitude != 0) {
+                            if(checked == 1 || checked == 2){
+                                String temp1 = cursor1.getString(22);
+                                String temp2 = cursor1.getString(23);
+                                //AskTmap askTmap = new AskTmap(latitude, longitude, Double.parseDouble(temp1), Double.parseDouble(temp2), checked);
+                                //remaintime = askTmap.GetResult() * 60;  // 이부분이 안고쳐져서 일단 다음에..
+                            }
+                            else if(checked == 3) {
+                                AskGoogle askGoogle = new AskGoogle(eventPlaceID, longitude, latitude);
+                                if (askGoogle.GetResult() != 0) {
+                                    remaintime = askGoogle.GetResult();
+                                }
                             }
                         }
                         // 거리 계산하는 프로그램이 만든 결과를 reminder minute로 만든다.
                         if((lefttime/60000) - remaintime/60 <= 0)
                             remaintime = (int)(lefttime/60000) - 2;
+
+                        Log.d("Location Test", "바뀐 이벤트 remaintime " + remaintime / 60);
                         db.execSQL("UPDATE events SET reminder_minutes = " + remaintime/60 + " WHERE id = " + eventNo);
                         Event mEvent = dbHelper.getEventWithId(eventNo);
                         dbHelper.update(mEvent, true, null);
                     }
+
+                    String eventTitle = cursor1.getString(3);
                     Log.d("Location Test", "Event = " + eventTitle + startTime + ", reminderTime " + reminderTime + " PLACEID : "+eventPlaceID);
                     if(cursor1.isLast())
                         break;

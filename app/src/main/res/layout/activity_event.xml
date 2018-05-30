@@ -101,15 +101,45 @@
             android:layout_marginLeft="@dimen/activity_margin"
             android:layout_marginRight="@dimen/activity_margin" />
 
-        <CheckBox
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/location_description"
-            android:text="위치기반 자동알림 사용"
-            android:textColor="#6d6e6e"
+
+        <RadioGroup
             android:id="@+id/location_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/location_description"
+            android:orientation="horizontal"
             android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"/>
+            android:layout_marginRight="@dimen/activity_margin">
+
+        <RadioButton
+            android:id="@+id/radio0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:textColor="#6d6e6e"
+            android:text="사용안함   " />
+
+        <RadioButton
+            android:id="@+id/radio1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#6d6e6e"
+            android:text="도보     " />
+
+        <RadioButton
+            android:id="@+id/radio2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#6d6e6e"
+            android:text="자차     " />
+
+        <RadioButton
+            android:id="@+id/radio3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#6d6e6e"
+            android:text="대중교통" />
+        </RadioGroup>
 
 
         <com.simplemobiletools.commons.views.MyEditText
@@ -119,7 +149,7 @@
             android:layout_below="@+id/location_check"
             android:layout_marginLeft="@dimen/activity_margin"
             android:layout_marginRight="@dimen/activity_margin"
-            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_marginTop="16dp"
             android:autoLink="all"
             android:gravity="top"
             android:hint="@string/category"

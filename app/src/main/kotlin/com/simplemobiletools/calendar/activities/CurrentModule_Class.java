@@ -19,10 +19,13 @@ public class CurrentModule_Class {
 
         private String mykey = "&key=AIzaSyADOyPOEzJ3AXLBBFtWpvfxPozZYRbs0Y8";
         private JSONObject obj;
+        private JSONObject obj2;
         private String input;
         private String getpage = new String();
         private ArrayList<String> placename = new ArrayList<String>();
         private ArrayList<String> placeid = new ArrayList<String>();
+        private String latit;
+        private String longit;
 
         // 생성자
         GetPlaceData(){}
@@ -88,6 +91,8 @@ public class CurrentModule_Class {
             }
         }
 
+
+
         // DownloadJson 하위 클래스는 스레드이다. doInBackGround의 작업이 스레드로 실행되게 된다.
         private class DownloadJson extends AsyncTask<String, String, String> {
             @Override
@@ -115,6 +120,82 @@ public class CurrentModule_Class {
                         getpage += scan.nextLine();
                     scan.close();
                     System.out.println("Test2 : " + googleurl);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return getpage;
+            }
+        }
+    }
+
+    public class GetLongitLatit {
+        private String mykey = "&key=AIzaSyADOyPOEzJ3AXLBBFtWpvfxPozZYRbs0Y8";
+        private JSONObject obj;
+        private String getpage = new String();
+        private String latit;
+        private String longit;
+        private String placeid;
+
+        public GetLongitLatit(){;}
+        public GetLongitLatit(String placeid){
+            this.placeid = placeid;
+            GetDataParsingData();
+        }
+
+        public String GetLatit() {return latit;}
+        public String GetLongit() {return longit;}
+
+        public boolean GetDataParsingData(){
+            try {
+
+                String basic = "https://maps.googleapis.com/maps/api/place/details/json?language=ko";
+                String finalurl = basic + "&placeid=" + placeid + mykey;
+
+                new DownloadJson().execute(finalurl).get();
+
+                obj = new JSONObject(getpage);
+
+                if (!obj.getString("status").equals("OK"))
+                    return false;
+
+                JSONObject leg = obj.getJSONObject("result");
+                double temp1 = leg.getJSONObject("geometry").getJSONObject("location").getDouble("lat");
+                double temp2 = leg.getJSONObject("geometry").getJSONObject("location").getDouble("lng");
+                latit = String.valueOf(temp1);
+                longit = String.valueOf(temp2);
+
+                return true;
+            }
+            catch(Exception e) {
+                System.out.println(e + "GetLongitLatit의 GetLatit에서 오류." );
+                return false ;
+            }
+        }
+
+        private class DownloadJson extends AsyncTask<String, String, String> {
+            @Override
+            protected String doInBackground(String... arg0) {
+                try {
+                    return GetData(arg0[0]);
+                }
+                catch (Exception e) {
+                    return "JSON Download Failed";
+                }
+            }
+
+            protected void onPostExecute(String result){
+                ;
+            }
+
+            private String GetData(String finalurl) {
+                try {
+                    URL googleurl = new URL(finalurl);
+                    HttpURLConnection con = (HttpURLConnection) googleurl.openConnection();
+
+                    Scanner scan = new Scanner(con.getInputStream());
+                    while (scan.hasNext())
+                        getpage += scan.nextLine();
+                    scan.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
