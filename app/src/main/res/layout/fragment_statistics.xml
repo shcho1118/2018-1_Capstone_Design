@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/calendar_statistics_holder"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.simplemobiletools.commons.views.MyTextView
+        android:id="@+id/year"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/big_margin"
+        android:layout_marginLeft="@dimen/big_margin"
+        android:text="년(年) : "/>
+
+    <Spinner
+        android:id="@+id/year_spinner"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@id/year"
+        android:layout_marginTop="22dp"
+        android:layout_marginLeft="5dp"/>
+
+    <com.simplemobiletools.commons.views.MyTextView
+        android:id="@+id/month"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/year"
+        android:layout_marginTop="@dimen/big_margin"
+        android:layout_marginLeft="@dimen/big_margin"
+        android:text="월(月) : "/>
+
+    <Spinner
+        android:id="@+id/month_spinner"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:layout_below="@id/year"
+        android:layout_toRightOf="@id/month"
+        android:layout_marginTop="22dp"
+        android:layout_marginLeft="5dp"/>
+
+    <com.simplemobiletools.commons.views.MyTextView
+        android:id="@+id/calendar_schedule_performance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/month_spinner"
+        android:lineSpacingExtra="1dp"
+        android:padding="@dimen/big_margin"
+        android:text="@string/schedule_performance"/>
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/piechart_performance"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_margin="10dp"
+        android:layout_below="@id/calendar_schedule_performance"/>
+
+    <com.simplemobiletools.commons.views.MyTextView
+        android:id="@+id/calendar_schedule_proportion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/piechart_performance"
+        android:lineSpacingExtra="1dp"
+        android:padding="@dimen/big_margin"
+        android:text="@string/schedule_proportion"/>
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/piechart_proportion"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_margin="10dp"
+        android:layout_below="@id/calendar_schedule_proportion"/>
+
+</RelativeLayout>
+
+</ScrollView>
