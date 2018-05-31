@@ -1,12 +1,8 @@
 package com.simplemobiletools.calendar.extras;
 
-import android.content.Context;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,7 +21,7 @@ public class ExtractRule1 {
 
     private static final Set<String> TTA_TIME_TI =
             new HashSet<>(Arrays.asList(
-                    "TI_OTHERS", "TI_HOUR", "TI_MINUTE", "TI_SECOND"
+                    "TI_OTHERS", "TI_HOUR", "TI_MINUTE", "TI_SECOND", "TI_DURATION"
             ));
 
     private static final Set<String> TTA_TIME_DT =
@@ -57,7 +53,7 @@ public class ExtractRule1 {
         day_of_week.put("금요일", 6);
         day_of_week.put("토요일", 7);
     }
-////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     public String getParsedLoc(){
         return Final_loc;
     }
@@ -78,8 +74,6 @@ public class ExtractRule1 {
 
             // JSONObject : { ... }
             JSONObject return_object = json_result.getJSONObject("return_object");
-            //System.out.println(return_object + "\n\n");
-
             // JSONArray : [ ... ]
             JSONArray sentences = return_object.getJSONArray("sentence");
 
@@ -91,8 +85,6 @@ public class ExtractRule1 {
             for (i = 0; i < sentences_length; i++) {
                 JSONObject sentence = sentences.getJSONObject(i);
                 int base_hour = 0;
-
-                System.out.println("text" + sentence.getString("text"));
 
                 // 개체명 분석 시작점
 
@@ -113,19 +105,30 @@ public class ExtractRule1 {
                                 base_hour += 12;
                             } else { // 오후, 오전 등의 개념이 아닐때(기본값은 오전임)
                                 try {
-                                    if (cur_token.contains("시")) {
+                                    if (cur_token.contains("시간")) { // 3시간 뒤에, 3시간 후에 만나자
+                                        final_time.add(Calendar.HOUR_OF_DAY, integer_from_string(cur_token));
+                                    }
+                                    else if (cur_token.contains("시")) {
                                         int hour = integer_from_string(cur_token);
                                         if (hour == 12 && is_later) {
                                             // 오후 12시인 경우 더해주면 안됨
-                                            final_time.set(Calendar.HOUR_OF_DAY, 12); // 12시로 맞춰줌
+                                            if (k != token_length - 1 && (token_list[k + 1].contains("분"))) {
+                                                final_time.set(Calendar.HOUR_OF_DAY, 12); // 12시로 맞춰줌
+                                            }
+                                            else {
+                                                final_time.set(Calendar.HOUR_OF_DAY, 12); // 12시로 맞춰줌
+                                                final_time.set(Calendar.MINUTE, 0); // 00분으로 맞춰줌
+                                            }
                                         } else {
                                             base_hour += hour;
-                                            final_time.set(Calendar.HOUR_OF_DAY, base_hour); // (base_hour)로 맞춰줌
+                                            if (k != token_length - 1 && (token_list[k + 1].contains("분"))) {
+                                                final_time.set(Calendar.HOUR_OF_DAY, base_hour); // (base_hour)로 맞춰줌
+                                            }
+                                            else {
+                                                final_time.set(Calendar.HOUR_OF_DAY, base_hour); // base_hour로 맞춰줌
+                                                final_time.set(Calendar.MINUTE, 0);
+                                            }
                                         }
-                                    } else if (cur_token.contains("시간") && // 3시간 "뒤"에 만나자
-                                            (k != token_length - 1 && (token_list[k + 1].equals("뒤") || (token_list[k + 1].equals("후"))))) {
-                                        // 3시간 뒤에, 3시간 후에 만나자
-                                        final_time.add(Calendar.HOUR, integer_from_string(cur_token));
                                     } else if (cur_token.contains("분")) {
                                         // 3시간 30분 뒤에 만나자, 50분 뒤에 만나자...
                                         if (k != token_length - 1 && (token_list[k + 1].equals("뒤") || (token_list[k + 1].equals("후")))) {
@@ -197,11 +200,17 @@ public class ExtractRule1 {
                                 } else if (dow == isSame) { // 이동해야 하는 요일이 바로 7일 뒤라면
                                     final_time.add(Calendar.DATE, 7);
                                 } else {
-                                    while (true) {
-                                        final_time.add(Calendar.DAY_OF_WEEK, -1);
-                                        if (final_time.get(Calendar.DAY_OF_WEEK) == isSame) {
-                                            final_time.add(Calendar.DATE, 7);
-                                            break;
+                                    if (isSame == 1) { // 일요일
+                                        final_time.set(Calendar.DAY_OF_WEEK, 1);
+                                        final_time.add(Calendar.DATE, 14);
+                                    }
+                                    else {
+                                        while (true) {
+                                            final_time.add(Calendar.DAY_OF_WEEK, -1);
+                                            if (final_time.get(Calendar.DAY_OF_WEEK) == isSame) {
+                                                final_time.add(Calendar.DATE, 7);
+                                                break;
+                                            }
                                         }
                                     }
                                 }
@@ -222,11 +231,17 @@ public class ExtractRule1 {
                                 } else if (dow == isSame) { // 이동해야 하는 요일이 바로 7일 뒤라면
                                     final_time.add(Calendar.DATE, 7);
                                 } else {
-                                    while (true) {
-                                        final_time.add(Calendar.DAY_OF_WEEK, -1);
-                                        if (final_time.get(Calendar.DAY_OF_WEEK) == isSame) {
-                                            final_time.add(Calendar.DATE, 7);
-                                            break;
+                                    if (isSame == 1) { // 일요일
+                                        final_time.set(Calendar.DAY_OF_WEEK, 1);
+                                        final_time.add(Calendar.DATE, 14);
+                                    }
+                                    else {
+                                        while (true) {
+                                            final_time.add(Calendar.DAY_OF_WEEK, -1);
+                                            if (final_time.get(Calendar.DAY_OF_WEEK) == isSame) {
+                                                final_time.add(Calendar.DATE, 7);
+                                                break;
+                                            }
                                         }
                                     }
                                 }
@@ -251,9 +266,8 @@ public class ExtractRule1 {
                                 } catch (java.lang.NullPointerException e) {
                                     e.printStackTrace();
                                 }
-                            } else if (cur_token.contains("일") && (!cur_token.contains("내일"))) {
+                            } else if (cur_token.contains("일")) {
                                 if (cur_token.contains("내일")) {
-                                    System.out.println("내일");
                                     final_time.add(Calendar.DATE, 1);
                                 } else {
                                     try {
@@ -310,30 +324,8 @@ public class ExtractRule1 {
                 }
 
                 // 의미역 분석 종료점
-
-                SimpleDateFormat yyyy = new SimpleDateFormat("yyyy", Locale.KOREA); // 년
-                SimpleDateFormat MM = new SimpleDateFormat("MM", Locale.KOREA); // 월
-                SimpleDateFormat dd = new SimpleDateFormat("dd", Locale.KOREA); // 일
-                SimpleDateFormat HH = new SimpleDateFormat("HH", Locale.KOREA); // 시간
-                SimpleDateFormat mm = new SimpleDateFormat("mm", Locale.KOREA); // 분
-
-                System.out.println("\n\n**************************************************");
-                System.out.println(final_time.getTime());
-                System.out.println("년 : " + yyyy.format(final_time.getTime()));
-                System.out.println("월 : " + MM.format(final_time.getTime()));
-                System.out.println("일 : " + dd.format(final_time.getTime()));
-                System.out.println("시 : " + HH.format(final_time.getTime()));
-                System.out.println("분 : " + mm.format(final_time.getTime()));
-                System.out.println("**************************************************");
-
-                System.out.println("\n\n\n");
-                if (Final_loc != null) {
-                    System.out.println("최종 장소 정보");
-                    System.out.println(Final_loc);
-                }
             }
         } catch (org.json.JSONException e) {
-            System.out.println("JSONException error in Save_jsonFiles function");
             e.printStackTrace();
         }
     }

@@ -3,7 +3,6 @@ package com.simplemobiletools.calendar.extras;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.util.Log;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -28,8 +27,6 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -37,60 +34,23 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 public class ImageToText {
     private static final String CLOUD_VISION_API_KEY = BuildConfig.API_KEY;
     private static final String ANDROID_CERT_HEADER = "X-Android-Cert";
     private static final String ANDROID_PACKAGE_HEADER = "X-Android-Package";
     private static final int MAX_LABEL_RESULTS = 10;
-    private static final int MAX_DIMENSION = 1200;
     private static final String TAG = ImageToText.class.getSimpleName();
     private static Context context;
-    private Class targetClass;
-
     private static JSONObject json_result;
+    private static Class targetClass;
 
 
     public ImageToText(Context context, Class targetClass) {
         this.context = context;
         this.targetClass = targetClass;
-    }
-
-    private static void Save_jsonFiles(String json) {
-        try {
-            Date today = new Date(); // 현재 시간을 가리키는 변수
-            SimpleDateFormat now = new SimpleDateFormat("yyyy_MM_dd_hh_mm_ss_a"); // 새로운 포맷으로 현재 시간을 출력함
-            TimeZone tz;
-            tz = TimeZone.getTimeZone("Asia/Seoul");
-            now.setTimeZone(tz);
-
-            String fileName = now.format(today) + "_analysis_code.json";
-            String dirPath = context.getFilesDir() + "/" + fileName;
-            FileWriter writeFile = new FileWriter(dirPath);
-
-            System.out.println("path name : " + dirPath);
-
-            writeFile.write(json);
-            writeFile.flush();
-            writeFile.close();
-
-            InputStream Is = new FileInputStream(dirPath);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(Is, "UTF-8"));
-            StringBuilder sb = new StringBuilder();
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-            reader.close();
-        } catch (java.io.IOException e) {
-            e.printStackTrace();
-        }
     }
 
     // ( 8 )
@@ -110,8 +70,7 @@ public class ImageToText {
 
     // ( 9 )
     private static String analysisStrings(String text) {
-        System.out.println("AnalysisStrings 함수 진입");
-        text = text.replace('\n', '.');
+        text = text.replaceAll("\n", "");
 
         StringBuilder sb = new StringBuilder();
         HttpURLConnection myConnection = null;
@@ -153,7 +112,7 @@ public class ImageToText {
 
                 String result;
                 while ((result = br.readLine()) != null) {
-                    sb.append(result + "\n");
+                    sb.append(result).append("\n");
                 }
                 System.out.println(sb.toString());
                 br.close();
@@ -255,25 +214,6 @@ public class ImageToText {
         return annotateRequest;
     }
 
-    public Bitmap scaleBitmapDown(Bitmap bitmap, int maxDimension) {
-        int originalWidth = bitmap.getWidth();
-        int originalHeight = bitmap.getHeight();
-        int resizedWidth = maxDimension;
-        int resizedHeight = maxDimension;
-
-        if (originalHeight > originalWidth) {
-            resizedHeight = maxDimension;
-            resizedWidth = (int) (resizedHeight * (float) originalWidth / (float) originalHeight);
-        } else if (originalWidth > originalHeight) {
-            resizedWidth = maxDimension;
-            resizedHeight = (int) (resizedWidth * (float) originalHeight / (float) originalWidth);
-        } else if (originalHeight == originalWidth) {
-            resizedHeight = maxDimension;
-            resizedWidth = maxDimension;
-        }
-        return Bitmap.createScaledBitmap(bitmap, resizedWidth, resizedHeight, false);
-    }
-
     // ( 7 )
     private static class LabelDetectionTask extends AsyncTask<Object, Void, String> {
         private Vision.Images.Annotate mRequest;
@@ -299,8 +239,7 @@ public class ImageToText {
 
         @Override
         protected void onPostExecute(String result) { // 백그라운드 스레드의 작업을 완료한 후 실행하는 부분
-            Save_jsonFiles(result);
-            ExtractTimeLocation extractTimeLocation = new ExtractTimeLocation(context, EventActivity.class, json_result);
+            ExtractTimeLocation extractTimeLocation = new ExtractTimeLocation(context, targetClass, json_result);
             extractTimeLocation.generateNewEvent();
         }
     }

@@ -217,6 +217,7 @@ public class ExtractRule2 {
         int day = parseIntBefore("일", durationStr);
         int hour = parseIntBefore("시", durationStr);
         int minute = parseIntBefore("분", durationStr);
+
         if (year > 0)
             parsedDuration += 525000 * year;
         if (month > 0)

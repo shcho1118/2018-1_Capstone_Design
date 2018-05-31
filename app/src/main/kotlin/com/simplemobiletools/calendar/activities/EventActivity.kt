@@ -169,7 +169,8 @@ class EventActivity : SimpleActivity() {
             val startTS = (intent.getLongExtra("beginTime", System.currentTimeMillis()) / 1000).toInt()
             mEventStartDateTime = Formatter.getDateTimeFromTS(startTS)
 
-            val endTS = (intent.getLongExtra("endTime", System.currentTimeMillis()) / 1000).toInt()
+            val endTS = (intent.getLongExtra("endTime",
+                    intent.getLongExtra("beginTime", System.currentTimeMillis())) / 1000).toInt()
             mEventEndDateTime = Formatter.getDateTimeFromTS(endTS)
 
             event_title.setText(intent.getStringExtra("title"))
