@@ -92,6 +92,7 @@ public class ProjectorService extends Service {
             latestBmp.get().compress(Bitmap.CompressFormat.PNG, 100, png);
             png.close();
             Intent cropActivity = new Intent(this, CropActivity.class);
+            cropActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(cropActivity);
         } catch (Exception e) {
             Log.e("ProjectorService", "Capture is failed", e);
