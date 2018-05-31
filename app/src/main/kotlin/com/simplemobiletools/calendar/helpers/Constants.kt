@@ -20,6 +20,7 @@ const val YEARLY_VIEW = 2
 const val EVENTS_LIST_VIEW = 3
 const val WEEKLY_VIEW = 4
 const val DAILY_VIEW = 5
+const val STATISTICS_VIEW = 6
 
 const val REMINDER_OFF = -1
 

@@ -13,6 +13,7 @@ import android.util.Log;
 
 import com.simplemobiletools.calendar.helpers.DBHelper;
 import com.simplemobiletools.calendar.models.Event;
+import com.skt.Tmap.TMapTapi;
 
 import java.util.Calendar;
 
@@ -22,6 +23,8 @@ public class MyLocationService extends Service {
     public double latitude = 0;
     private LocationManager mLocationManager = null;
     private int timer = 280;
+    private final String TMAP_API_KEY = "91641875-873e-44bf-ad99-6021fec7a262";//api키 값입니다
+    private TMapTapi tmaptapi;
 
     private class LocationListener implements android.location.LocationListener {
         Location mLastLocation;
@@ -42,7 +45,6 @@ public class MyLocationService extends Service {
                 timer = 0;
                 testfun();
             }
-
         }
 
         @Override
@@ -63,6 +65,9 @@ public class MyLocationService extends Service {
 
     private void initializeLocationManager() {
         Log.e("Location Manager", "initialize LocationManager");
+        tmaptapi = new TMapTapi(this);  // 원래 여기가 this 였음.
+        tmaptapi.setSKTMapAuthentication(TMAP_API_KEY);
+
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }
@@ -75,6 +80,7 @@ public class MyLocationService extends Service {
         super.onStartCommand(intent, flags, startId);
         initializeLocationManager();
         try{
+
             Log.e("Location onCreate", "onCreate입니다.");
             mLocationManager.requestLocationUpdates(
                     LocationManager.NETWORK_PROVIDER, 3 , 0, mLocationListeners); //, Looper.getMainLooper());
@@ -130,7 +136,6 @@ public class MyLocationService extends Service {
                 while(true) {
                     int eventNo = cursor1.getInt(0 );
                     int startTime = cursor1.getInt(1);
-                    String eventTitle = cursor1.getString(3);
                     String eventPlaceID = cursor1.getString(18);
                     int reminderTime = cursor1.getInt(5);
                     int checked = cursor1.getInt(19);
@@ -140,21 +145,40 @@ public class MyLocationService extends Service {
                     int remaintime = 0;
 
                     // 만약 설정이 거리 기반으로 설정되어 있고 8시간 안에 일어날 사건이고 알람이 울린 시간이 지났다면
-                    if(checked == 1 && (lefttime <= 60000 * 60 * 8 && (lefttime/60000) > reminderTime) && eventPlaceID != null) {
-                        if(longitude != 0 && latitude != 0){
-                            AskGoogle askGoogle = new AskGoogle(eventPlaceID, longitude, latitude);
-                            if(askGoogle.GetResult() != 0){
-                                remaintime = askGoogle.GetResult();
-                                Log.d("Location Test", "바뀐 이벤트 remaintime " + remaintime/60);
+                    if(checked != 0 && (lefttime <= 60000 * 60 * 8 && (lefttime/60000) > reminderTime) && eventPlaceID != null) {
+                        if(longitude != 0 && latitude != 0) {
+
+                            // 도보나 자동차의 경우 askTmap 클래스를 이용한다.
+                            if(checked == 1 || checked == 2){
+                                String temp1 = cursor1.getString(22);
+                                String temp2 = cursor1.getString(23);
+                                try {
+                                    remaintime = new AskTmap(latitude, longitude, Double.parseDouble(temp1), Double.parseDouble(temp2), checked).execute().get();
+                                }
+                                catch (Exception e){
+                                    e.printStackTrace();
+                                }
+                            }
+                            // 대중교통의 경우 Google Direction API를 이용한다.
+                            else if(checked == 3) {
+                                AskGoogle askGoogle = new AskGoogle(eventPlaceID, longitude, latitude);
+                                if (askGoogle.GetResult() != 0) {
+                                    remaintime = askGoogle.GetResult();
+                                }
                             }
                         }
                         // 거리 계산하는 프로그램이 만든 결과를 reminder minute로 만든다.
                         if((lefttime/60000) - remaintime/60 <= 0)
                             remaintime = (int)(lefttime/60000) - 2;
-                        db.execSQL("UPDATE events SET reminder_minutes = " + remaintime/60 + " WHERE id = " + eventNo);
+                        remaintime = (remaintime /60) + 2;
+                        Log.d("Location Test", "바뀐 이벤트 remaintime " + remaintime);
+
+                        db.execSQL("UPDATE events SET reminder_minutes = " + remaintime + " WHERE id = " + eventNo);
                         Event mEvent = dbHelper.getEventWithId(eventNo);
                         dbHelper.update(mEvent, true, null);
                     }
+
+                    String eventTitle = cursor1.getString(3);
                     Log.d("Location Test", "Event = " + eventTitle + startTime + ", reminderTime " + reminderTime + " PLACEID : "+eventPlaceID);
                     if(cursor1.isLast())
                         break;

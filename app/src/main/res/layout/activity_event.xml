@@ -12,10 +12,30 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <com.simplemobiletools.commons.views.MyAppCompatCheckbox
+            android:id="@+id/event_finish"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_margin"
+            android:layout_marginRight="@dimen/medium_margin"
+            android:layout_marginTop="@dimen/activity_margin"
+            android:visibility="gone"/>
+
+        <com.simplemobiletools.commons.views.MyTextView
+            android:id="@+id/event_finish_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/event_finish"
+            android:layout_marginTop="20dp"
+            android:text="@string/event_finish_description"
+            android:textSize="@dimen/day_text_size"
+            android:visibility="gone"/>
+
         <com.simplemobiletools.commons.views.MyEditText
             android:id="@+id/event_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/event_finish"
             android:layout_marginLeft="@dimen/activity_margin"
             android:layout_marginRight="@dimen/activity_margin"
             android:layout_marginTop="@dimen/activity_margin"
@@ -71,32 +91,78 @@
             android:paddingRight="@dimen/small_margin"
             android:src="@drawable/ic_place"/>
 
-        <TextView
+        <com.simplemobiletools.commons.views.MyTextView
             android:id="@+id/location_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/event_location"
             android:hint="location_description"
-            android:textColor="#e6e9e9"
             android:layout_marginLeft="@dimen/activity_margin"
             android:layout_marginRight="@dimen/activity_margin" />
 
-        <CheckBox
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/location_description"
-            android:text="위치기반 자동알림 사용"
-            android:textColor="#6d6e6e"
-            android:id="@+id/location_check"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"/>
 
+        <RadioGroup
+            android:id="@+id/location_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/location_description"
+            android:orientation="horizontal"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="@dimen/activity_margin">
+
+        <RadioButton
+            android:id="@+id/radio0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:textColor="#6d6e6e"
+            android:text="사용안함   " />
+
+        <RadioButton
+            android:id="@+id/radio1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#6d6e6e"
+            android:text="도보     " />
+
+        <RadioButton
+            android:id="@+id/radio2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#6d6e6e"
+            android:text="자차     " />
+
+        <RadioButton
+            android:id="@+id/radio3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#6d6e6e"
+            android:text="대중교통" />
+        </RadioGroup>
+
+
+        <com.simplemobiletools.commons.views.MyEditText
+            android:id="@+id/event_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/location_check"
+            android:layout_marginLeft="@dimen/activity_margin"
+            android:layout_marginRight="@dimen/activity_margin"
+            android:layout_marginTop="16dp"
+            android:autoLink="all"
+            android:gravity="top"
+            android:hint="@string/category"
+            android:inputType="textCapSentences"
+            android:linksClickable="true"
+            android:minEms="20"
+            android:textCursorDrawable="@null"
+            android:textSize="@dimen/day_text_size"/>
 
         <com.simplemobiletools.commons.views.MyEditText
             android:id="@+id/event_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/location_check"
+            android:layout_below="@+id/event_category"
             android:layout_marginLeft="@dimen/activity_margin"
             android:layout_marginRight="@dimen/activity_margin"
             android:layout_marginTop="@dimen/activity_margin"

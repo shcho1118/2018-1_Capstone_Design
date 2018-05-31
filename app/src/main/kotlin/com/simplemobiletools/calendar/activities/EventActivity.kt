@@ -5,12 +5,14 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
+import android.view.View
 import com.simplemobiletools.calendar.R
 import com.simplemobiletools.calendar.dialogs.*
 import com.simplemobiletools.calendar.extensions.*
@@ -23,6 +25,7 @@ import com.simplemobiletools.commons.extensions.*
 import com.simplemobiletools.commons.helpers.*
 import com.simplemobiletools.commons.models.RadioItem
 import kotlinx.android.synthetic.main.activity_event.*
+import kotlinx.android.synthetic.main.activity_event.view.*
 import org.joda.time.DateTime
 import java.util.*
 import java.util.regex.Pattern
@@ -141,11 +144,20 @@ class EventActivity : SimpleActivity() {
         event_title.setText(mEvent.title)
         event_location.setText(mEvent.location)
         location_description.setText(mEvent.locat_description).toString()
+        event_category.setText(mEvent.category)
         event_description.setText(mEvent.description)
         event_description.movementMethod = LinkMovementMethod.getInstance()
+        event_finish.setChecked(mEvent.isFinished)
+        event_finish.setVisibility(View.VISIBLE)
+        event_finish_description.setVisibility(View.VISIBLE)
 
-        if(mEvent.check_location == 1)
-            location_check.isChecked = true
+        if(mEvent.check_location == 1) {
+            location_check.radio1.isChecked = true
+        }
+        if(mEvent.check_location == 2)
+            location_check.radio2.isChecked = true
+        if(mEvent.check_location == 3)
+            location_check.radio3.isChecked = true
 
         mReminder1Minutes = mEvent.reminder1Minutes
         mReminder2Minutes = mEvent.reminder2Minutes
@@ -175,6 +187,7 @@ class EventActivity : SimpleActivity() {
 
             event_title.setText(intent.getStringExtra("title"))
             event_location.setText(intent.getStringExtra("eventLocation"))
+            event_category.setText(intent.getStringExtra("category"))
             event_description.setText(intent.getStringExtra("description"))
             event_description.movementMethod = LinkMovementMethod.getInstance()
         } else {
@@ -530,6 +543,13 @@ class EventActivity : SimpleActivity() {
         val newlocatdescript = location_description.value
         val newlocatid = locationId
         var checked_location = 0
+        var location_latit = ""
+        var location_longit = ""
+        if(locationId != ""){
+            val getLaLo = CurrentModule_Class().GetLongitLatit(locationId)
+            location_latit = getLaLo.GetLatit();
+            location_longit = getLaLo.GetLongit();
+        }
 
         val newStartTS = mEventStartDateTime.withSecondOfMinute(0).withMillisOfSecond(0).seconds()
         val newEndTS = mEventEndDateTime.withSecondOfMinute(0).withMillisOfSecond(0).seconds()
@@ -560,9 +580,16 @@ class EventActivity : SimpleActivity() {
         val reminder2 = reminders.getOrElse(1, { REMINDER_OFF })
         val reminder3 = reminders.getOrElse(2, { REMINDER_OFF })
 
-        if(location_check.isChecked && newlocatid != ""){
+        if(location_check.radio1.isChecked && newlocatid != ""){
             checked_location = 1
-        } else {
+        }
+        else if(location_check.radio2.isChecked && newlocatid != "") {
+            checked_location = 2
+        }
+        else if(location_check.radio3.isChecked && newlocatid != "") {
+            checked_location = 3
+        }
+        else {
             checked_location = 0
         }
 
@@ -594,6 +621,10 @@ class EventActivity : SimpleActivity() {
             locat_description = newlocatdescript
             locat_placeid = newlocatid
             check_location = checked_location
+            category = event_category.value
+            isFinished = event_finish.isChecked()
+            locat_latitude = location_latit
+            locat_longitude = location_longit
         }
 
         // recreate the event if it was moved in a different CalDAV calendar
@@ -818,6 +849,7 @@ class EventActivity : SimpleActivity() {
         event_type_image.applyColorFilter(textColor)
         event_caldav_calendar_image.applyColorFilter(textColor)
         event_show_on_map.applyColorFilter(getAdjustedPrimaryColor())
+        find_location.applyColorFilter(textColor)
     }
 
 

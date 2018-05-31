@@ -58,7 +58,7 @@ class EventListFragment : MyFragmentHolder(), RefreshRecyclerViewListener {
 
     private fun checkEvents() {
         val fromTS = DateTime().seconds() - context!!.config.displayPastEvents * 60
-        val toTS = DateTime().plusYears(1).seconds()
+        val toTS = DateTime().plusMonths(2).seconds()
         context!!.dbHelper.getEvents(fromTS, toTS) {
             receivedEvents(it)
         }
@@ -120,7 +120,7 @@ class EventListFragment : MyFragmentHolder(), RefreshRecyclerViewListener {
     override fun shouldGoToTodayBeVisible() = false
 
     override fun updateActionBarTitle() {
-        (activity as MainActivity).supportActionBar?.title = getString(R.string.app_launcher_name)
+        (activity as MainActivity).supportActionBar?.title = getString(R.string.simple_event_list)
     }
 
     override fun getNewEventDayCode() = Formatter.getTodayCode(context!!)
