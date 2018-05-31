@@ -46,6 +46,7 @@ public class ImageToText {
     private static Context context;
     private static JSONObject json_result;
     private static Class targetClass;
+    private static Bitmap mBitmap;
 
 
     public ImageToText(Context context, Class targetClass) {
@@ -146,6 +147,7 @@ public class ImageToText {
     // ( 5 )
     public void callCloudVision(final Bitmap bitmap) {
         try {
+            mBitmap = bitmap;
             AsyncTask<Object, Void, String> labelDetectionTask = new LabelDetectionTask(prepareAnnotationRequest(bitmap));
             labelDetectionTask.execute();
         } catch (IOException e) {
@@ -239,7 +241,7 @@ public class ImageToText {
 
         @Override
         protected void onPostExecute(String result) { // 백그라운드 스레드의 작업을 완료한 후 실행하는 부분
-            ExtractTimeLocation extractTimeLocation = new ExtractTimeLocation(context, targetClass, json_result);
+            ExtractTimeLocation extractTimeLocation = new ExtractTimeLocation(context, targetClass, json_result, mBitmap);
             extractTimeLocation.generateNewEvent();
         }
     }

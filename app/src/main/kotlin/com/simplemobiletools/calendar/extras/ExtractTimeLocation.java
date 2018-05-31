@@ -2,22 +2,26 @@ package com.simplemobiletools.calendar.extras;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Calendar;
 
 public class ExtractTimeLocation {
     private Context mContext;
     private Class mClass;
     private JSONObject mJSONObject;
+    private Bitmap mBitmap;
     private static final String TAG = ExtractTimeLocation.class.getSimpleName();
 
-    public ExtractTimeLocation(Context mContext, Class mClass, JSONObject mJSONObject){
+    public ExtractTimeLocation(Context mContext, Class mClass, JSONObject mJSONObject, Bitmap mBitmap){
         this.mContext = mContext;
         this.mClass = mClass;
         this.mJSONObject = mJSONObject;
+        this.mBitmap = mBitmap;
     }
 
     public void generateNewEvent(){
@@ -45,6 +49,10 @@ public class ExtractTimeLocation {
         targetActivity.putExtra("beginTime", startTs);
         targetActivity.putExtra("eventLocation", parsedLoc);
         targetActivity.putExtra("description", parsedDescription);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        targetActivity.putExtra("croppedImage", byteArray);
         mContext.startActivity(targetActivity);
     }
 }

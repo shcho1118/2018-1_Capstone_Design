@@ -5,6 +5,8 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -13,6 +15,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
 import android.view.View
+import android.widget.ImageView
 import com.simplemobiletools.calendar.R
 import com.simplemobiletools.calendar.dialogs.*
 import com.simplemobiletools.calendar.extensions.*
@@ -62,6 +65,12 @@ class EventActivity : SimpleActivity() {
 
         val eventId = intent.getIntExtra(EVENT_ID, 0)
         val event = dbHelper.getEventWithId(eventId)
+
+        val arr = getIntent().getByteArrayExtra("croppedImage")
+        if(arr != null) {
+            var croppedImage = BitmapFactory.decodeByteArray(arr, 0, arr.size)
+            event_croppedImage.setImageBitmap(croppedImage)
+        }
 
         if (eventId != 0 && event == null) {
             finish()
