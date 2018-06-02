@@ -99,12 +99,12 @@ class StatisticsFragment : MyFragmentHolder(), RefreshRecyclerViewListener, OnIt
 
     private fun checkEvents() {
 
-        val fromTS = DateTime().withDate(selectedYear,selectedMonth,1).seconds()
+        val fromTS = DateTime(selectedYear,selectedMonth,1,0,0).seconds()
         val toTS: Int
         if(selectedMonth+1>12)
-            toTS = DateTime().withDate(selectedYear+1,1,1).seconds()
+            toTS = DateTime(selectedYear,12,31,23,59).seconds()
         else
-            toTS = DateTime().withDate(selectedYear,selectedMonth+1,1).seconds()
+            toTS = DateTime(selectedYear,selectedMonth+1,1,0,0).seconds()-1
         context!!.dbHelper.getEvents(fromTS, toTS) {
             receivedEvents(it)
         }
@@ -196,13 +196,14 @@ class StatisticsFragment : MyFragmentHolder(), RefreshRecyclerViewListener, OnIt
             pieData.setValueTextColor(context!!.config.textColor)
 
             mPie?.data = pieData
+            mPie?.setEntryLabelColor(context!!.config.textColor)
 
             val dataSet2 = PieDataSet(entry2, "")
             var colors = mutableListOf<Int>()
             for(i in 0..categoryNum-1) {
-                if(categoryNum == 1) {
-                    colors.add(ColorTemplate.COLORFUL_COLORS[0])
-                    break
+                if(categoryNum <= 3) {
+                    colors.add(ColorTemplate.COLORFUL_COLORS[i])
+                    continue
                 }
                 if(i<categoryNum-1)
                     colors.add(ColorTemplate.COLORFUL_COLORS[i])
@@ -218,6 +219,7 @@ class StatisticsFragment : MyFragmentHolder(), RefreshRecyclerViewListener, OnIt
             pieData2.setValueTextColor(context!!.config.textColor)
 
             mPie2?.data = pieData2
+            mPie2?.setEntryLabelColor(context!!.config.textColor)
         }
 
         activity?.runOnUiThread {
