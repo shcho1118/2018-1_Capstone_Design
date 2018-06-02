@@ -71,7 +71,6 @@ public class ExtractRule1 {
         try {
             final_time.setTime(new Date());
 
-
             // JSONObject : { ... }
             JSONObject return_object = json_result.getJSONObject("return_object");
             // JSONArray : [ ... ]
@@ -84,6 +83,7 @@ public class ExtractRule1 {
             // ImageToText에 들어온 문장의 개수만큼 분석함
             for (i = 0; i < sentences_length; i++) {
                 JSONObject sentence = sentences.getJSONObject(i);
+                System.out.println(sentence);
                 int base_hour = 0;
 
                 // 개체명 분석 시작점
@@ -98,14 +98,26 @@ public class ExtractRule1 {
                     if (TTA_TIME_TI.contains(type)) {
                         String[] token_list = text.split(" ");
                         int token_length = token_list.length;
+
+                        boolean breaking = false; // 동안이라는 단어가 들어가 있는지 확인
                         for (k = 0; k < token_length; k++) {
+                            if (token_list[k].contains("동안")) {
+                                breaking = true;
+                                break;
+                            }
+                        }
+                        if (breaking) {
+                            continue;
+                        }
+
+                        for (k = 0; k < token_length; k++) { // 3시간, 30분, 동안
                             String cur_token = token_list[k];
                             if (when_later.contains(cur_token)) {
                                 is_later = true;
                                 base_hour += 12;
                             } else { // 오후, 오전 등의 개념이 아닐때(기본값은 오전임)
                                 try {
-                                    if (cur_token.contains("시간")) { // 3시간 뒤에, 3시간 후에 만나자
+                                    if ((cur_token.contains("시간"))){ // 3시간 뒤에, 3시간 후에 만나자
                                         final_time.add(Calendar.HOUR_OF_DAY, integer_from_string(cur_token));
                                     }
                                     else if (cur_token.contains("시")) {

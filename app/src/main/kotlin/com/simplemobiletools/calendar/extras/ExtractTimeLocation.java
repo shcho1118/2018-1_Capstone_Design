@@ -30,6 +30,7 @@ public class ExtractTimeLocation {
         String parsedLoc = null;
         Calendar parsedTime = null;
         String parsedDescription = null;
+        long parsedDuration = 0;
 
         extractRule1.analysisCode();
         extractRule2.analysisCode();
@@ -37,16 +38,20 @@ public class ExtractTimeLocation {
         if(parsedLoc == null) parsedLoc = extractRule2.getParsedLoc();
         parsedTime = extractRule1.getParsedTime();
         parsedDescription = extractRule2.getParsedDescription();
+        parsedDuration = extractRule2.getParsedDuration();
 
         Log.d(TAG, "parsedLoc is " + parsedLoc);
         Log.d(TAG, "parsedTime is " + parsedTime.getTime().toString());
         Log.d(TAG, "parsedDescription is " + parsedDescription);
+        Log.d(TAG, "parsedDuration is " + parsedDuration);
 
         Intent targetActivity = new Intent(mContext, mClass);
         targetActivity.setAction(Intent.ACTION_INSERT);
         long startTs = parsedTime.getTimeInMillis();
+        long endTs = startTs + parsedDuration * 60 * 1000;
         targetActivity.putExtra("title", parsedLoc + " " + parsedDescription);
         targetActivity.putExtra("beginTime", startTs);
+        targetActivity.putExtra("endTime", endTs);
         targetActivity.putExtra("eventLocation", parsedLoc);
         targetActivity.putExtra("description", parsedDescription);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
