@@ -54,6 +54,10 @@ class Config(context: Context) : BaseConfig(context) {
         get() = prefs.getInt(REMINDER_MINUTES_3, REMINDER_OFF)
         set(defaultReminderMinutes3) = prefs.edit().putInt(REMINDER_MINUTES_3, defaultReminderMinutes3).apply()
 
+    var defaultDelayAlarmTime: Int
+        get() = prefs.getInt(DELAY_ALARM_TIME, 0)
+        set(defaultDelayAlarmTime) = prefs.edit().putInt(DELAY_ALARM_TIME, defaultDelayAlarmTime).apply()
+
     var displayPastEvents: Int
         get() = prefs.getInt(DISPLAY_PAST_EVENTS, 0)
         set(displayPastEvents) = prefs.edit().putInt(DISPLAY_PAST_EVENTS, displayPastEvents).apply()
