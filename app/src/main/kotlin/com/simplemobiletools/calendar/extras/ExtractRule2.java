@@ -218,6 +218,9 @@ public class ExtractRule2 {
         int hour = parseIntBefore("시", durationStr);
         int minute = parseIntBefore("분", durationStr);
 
+        if(durationStr.contains("뒤"))
+            return;
+
         if (year > 0)
             parsedDuration += 525000 * year;
         if (month > 0)
