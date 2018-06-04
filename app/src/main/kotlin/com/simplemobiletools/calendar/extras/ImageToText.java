@@ -20,7 +20,6 @@ import com.google.api.services.vision.v1.model.EntityAnnotation;
 import com.google.api.services.vision.v1.model.Feature;
 import com.google.api.services.vision.v1.model.Image;
 import com.simplemobiletools.calendar.BuildConfig;
-import com.simplemobiletools.calendar.activities.EventActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
