@@ -56,7 +56,7 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/settings_alarm_time_later"
+            android:id="@+id/settings_alarm_time_later2_holder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/medium_margin"
@@ -66,14 +66,51 @@
             android:paddingRight="@dimen/normal_margin"
             android:paddingTop="@dimen/activity_margin">
 
-            <com.simplemobiletools.commons.views.MyTextView
-                android:id="@+id/settings_alarm_time_later_label"
-                android:layout_width="wrap_content"
+            <com.simplemobiletools.commons.views.MySwitchCompat
+                android:id="@+id/settings_alarm_time_later2"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
+                android:background="@null"
+                android:clickable="false"
                 android:paddingLeft="@dimen/medium_margin"
                 android:paddingStart="@dimen/medium_margin"
-                android:text="거리기반 알람 설정"/>
+                android:text="거리기반알람 지연설정(자동)"/>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/settings_alarm_time_later_holder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/medium_margin"
+            android:background="?attr/selectableItemBackground"
+            android:paddingBottom="@dimen/bigger_margin"
+            android:paddingLeft="@dimen/normal_margin"
+            android:paddingRight="@dimen/normal_margin"
+            android:paddingTop="@dimen/bigger_margin">
+
+            <com.simplemobiletools.commons.views.MyTextView
+                android:id="@+id/settings_alarm_time_later_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/settings_alarm_time_latere"
+                android:layout_toStartOf="@+id/settings_alarm_time_later"
+                android:paddingLeft="@dimen/medium_margin"
+                android:paddingRight="@dimen/medium_margin"
+                android:text="거리기반알람 지연설정(수동)"/>
+
+            <com.simplemobiletools.commons.views.MyTextView
+                android:id="@+id/settings_alarm_time_later"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="@dimen/small_margin"
+                android:layout_marginRight="@dimen/small_margin"
+                android:background="@null"
+                android:clickable="false"/>
 
         </RelativeLayout>
 

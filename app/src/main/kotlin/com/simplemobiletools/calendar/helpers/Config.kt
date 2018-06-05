@@ -7,6 +7,7 @@ import com.simplemobiletools.commons.extensions.getDefaultAlarmTitle
 import com.simplemobiletools.commons.extensions.getDefaultAlarmUri
 import com.simplemobiletools.commons.helpers.ALARM_SOUND_TYPE_NOTIFICATION
 import com.simplemobiletools.commons.helpers.BaseConfig
+import com.simplemobiletools.commons.helpers.WAS_USE_ENGLISH_TOGGLED
 import java.util.*
 
 class Config(context: Context) : BaseConfig(context) {
@@ -57,6 +58,20 @@ class Config(context: Context) : BaseConfig(context) {
     var defaultDelayAlarmTime: Int
         get() = prefs.getInt(DELAY_ALARM_TIME, 0)
         set(defaultDelayAlarmTime) = prefs.edit().putInt(DELAY_ALARM_TIME, defaultDelayAlarmTime).apply()
+
+    var defaultDelayAlarmTime2Value: Int
+        get() = prefs.getInt(DELAY_ALARM_TIME2_VALUE, 0)
+        set(defaultDelayAlarmTime2Value) = prefs.edit().putInt(DELAY_ALARM_TIME2_VALUE, defaultDelayAlarmTime2Value).apply()
+
+    var defaultDelayAlarmTime2: Boolean
+        get() = prefs.getBoolean(DELAY_ALARM_TIME2, false)
+        set(defaultDelayAlarmTime2) {
+            wasDefaultDelayAlarmTime2Toggled = true
+            prefs.edit().putBoolean(DELAY_ALARM_TIME2, defaultDelayAlarmTime2).commit()
+        }
+    var wasDefaultDelayAlarmTime2Toggled: Boolean
+        get() = prefs.getBoolean(WAS_DELAY_ALARM_TIME2_TOGGLED, false)
+        set(wasDefaultDelayAlarmTime2Toggled) = prefs.edit().putBoolean(WAS_DELAY_ALARM_TIME2_TOGGLED, wasDefaultDelayAlarmTime2Toggled).apply()
 
     var displayPastEvents: Int
         get() = prefs.getInt(DISPLAY_PAST_EVENTS, 0)

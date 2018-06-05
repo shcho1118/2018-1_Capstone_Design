@@ -64,6 +64,8 @@ class SettingsActivity : SimpleActivity() {
         updateTextColors(settings_holder)
         checkPrimaryColor()
         setupSectionColors()
+        getDelayAlarm()
+        getDelayAlarm2()
     }
 
     override fun onPause() {
@@ -388,6 +390,32 @@ class SettingsActivity : SimpleActivity() {
         FONT_SIZE_MEDIUM -> R.string.medium
         else -> R.string.large
     })
+
+    private fun getDelayAlarm(){
+        settings_alarm_time_later.text = formatMinutesToTimeString(config.defaultDelayAlarmTime)
+        settings_alarm_time_later_holder.setOnClickListener {
+            showPickSecondsDialogHelper(config.defaultDelayAlarmTime, true) {
+                config.defaultDelayAlarmTime = it / 60
+                settings_alarm_time_later.text = formatMinutesToTimeString(config.defaultDelayAlarmTime)
+                if(settings_alarm_time_later2.isChecked) {
+                    settings_alarm_time_later2.toggle()
+                }
+            }
+        }
+    }
+
+    private fun getDelayAlarm2() {
+        settings_alarm_time_later2.isChecked = config.defaultDelayAlarmTime2
+        settings_alarm_time_later2_holder.setOnClickListener {
+            settings_alarm_time_later2.toggle()
+            config.defaultDelayAlarmTime2 = settings_alarm_time_later2.isChecked
+            if(settings_alarm_time_later2.isChecked) {
+                config.defaultDelayAlarmTime = -1
+                settings_alarm_time_later.text = "자동 조정 사용 중"
+
+            }
+        }
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
         super.onActivityResult(requestCode, resultCode, resultData)

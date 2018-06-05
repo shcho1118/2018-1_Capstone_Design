@@ -102,7 +102,6 @@ public class MyLocationService extends Service {
 
     @Override
     public void onCreate(){
-
     }
 
     @Override
@@ -139,6 +138,8 @@ public class MyLocationService extends Service {
                     String eventPlaceID = cursor1.getString(18);
                     int reminderTime = cursor1.getInt(5);
                     int checked = cursor1.getInt(19);
+                    int delay1 = cursor1.getInt(24);
+                    int delay2 = cursor1.getInt(25);
                     // DB의 Start Time은 1초 단위고 여기선 1/1000 단위라 단위를 맞추어주기 위함이다.
                     long startTime2 = ((long) startTime) * 1000;
                     long lefttime = startTime2 - now;
@@ -168,9 +169,15 @@ public class MyLocationService extends Service {
                             }
                         }
                         // 거리 계산하는 프로그램이 만든 결과를 reminder minute로 만든다.
-                        if((lefttime/60000) - remaintime/60 <= 0)
-                            remaintime = (int)(lefttime/60000) - 2;
                         remaintime = (remaintime /60) + 2;
+
+                        // 사용자 설정에 따라 알람을 좀 빨리 울릴 수 있다.
+                        if(delay1 == -1) remaintime = remaintime + delay2;
+                        else remaintime = remaintime + delay1;
+
+                        if((lefttime/60000) - remaintime <= 0)
+                            remaintime = ((int)(lefttime/60000)) - 2;
+
                         Log.d("Location Test", "바뀐 이벤트 remaintime " + remaintime);
 
                         db.execSQL("UPDATE events SET reminder_minutes = " + remaintime + " WHERE id = " + eventNo);
@@ -189,7 +196,7 @@ public class MyLocationService extends Service {
             Log.d("Location Test", "testfun 정상적으로 완료");
         }
         catch(Exception e) {
-            Log.d("Location Test Error", "testfun에 문제 ");
+            Log.d("Location Test Error", "testfun에 문제 " + e);
         }
 
     }
