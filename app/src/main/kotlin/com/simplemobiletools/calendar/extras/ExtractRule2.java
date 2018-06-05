@@ -17,7 +17,7 @@ public class ExtractRule2 {
     private String parsedDescription = "";
     private long parsedDuration = 0; // 분 단위
     private String TTA_TIME[] = {
-            "DT_TOHERS", "DT_YEAR", "DT_MONTH", "DT_DAY",
+            "DT_OTHERS", "DT_YEAR", "DT_MONTH", "DT_DAY",
             "TI_OTHERS", "TI_HOUR", "TI_MINUTE", "TI_SECOND"
     };
     private String TTA_LOC[] = {
