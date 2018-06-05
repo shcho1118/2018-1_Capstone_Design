@@ -56,6 +56,30 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/settings_alarm_time_later"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/medium_margin"
+            android:background="?attr/selectableItemBackground"
+            android:paddingBottom="@dimen/activity_margin"
+            android:paddingLeft="@dimen/normal_margin"
+            android:paddingRight="@dimen/normal_margin"
+            android:paddingTop="@dimen/activity_margin">
+
+            <com.simplemobiletools.commons.views.MyTextView
+                android:id="@+id/settings_alarm_time_later_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:paddingLeft="@dimen/medium_margin"
+                android:paddingStart="@dimen/medium_margin"
+                android:text="거리기반 알람 설정"/>
+
+        </RelativeLayout>
+
+
+
+        <RelativeLayout
             android:id="@+id/settings_use_english_holder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
