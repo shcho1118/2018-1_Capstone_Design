@@ -50,6 +50,8 @@ class EventActivity : SimpleActivity() {
     private var mEventCalendarId = STORED_LOCALLY_ONLY
     private var wasActivityInitialized = false
     private var locationId = ""
+    private var delayTime = 0
+    private var delayTime2 = 0
 
     lateinit var mEventStartDateTime: DateTime
     lateinit var mEventEndDateTime: DateTime
@@ -88,6 +90,9 @@ class EventActivity : SimpleActivity() {
             mReminder3Minutes = config.defaultReminderMinutes2
             setupNewEvent()
         }
+
+        delayTime = config.defaultDelayAlarmTime
+        delayTime2 = config.defaultDelayAlarmTime2Value
 
         checkReminderTexts()
         updateRepetitionText()
@@ -587,26 +592,34 @@ class EventActivity : SimpleActivity() {
         val reminders = sortedSetOf(mReminder1Minutes, mReminder2Minutes, mReminder3Minutes).filter { it != REMINDER_OFF }
         val reminder1 = reminders.getOrElse(0, { REMINDER_OFF })
         val reminder2 = reminders.getOrElse(1, { REMINDER_OFF })
-        val reminder3 = reminders.getOrElse(2, { REMINDER_OFF })
+        var reminder3 = reminders.getOrElse(2, { REMINDER_OFF })
 
         if(location_check.radio1.isChecked && newlocatid != ""){
             checked_location = 1
+            if(config.defaultDelayAlarmTime2 == false)
+                reminder3 = config.defaultDelayAlarmTime
         }
         else if(location_check.radio2.isChecked && newlocatid != "") {
             checked_location = 2
+            if(config.defaultDelayAlarmTime2 == false)
+                reminder3 = config.defaultDelayAlarmTime
         }
         else if(location_check.radio3.isChecked && newlocatid != "") {
             checked_location = 3
+            if(config.defaultDelayAlarmTime2 == false)
+                reminder3 = config.defaultDelayAlarmTime
         }
         else {
             checked_location = 0
         }
 
+        /*
         config.apply {
             defaultReminderMinutes = reminder1
             defaultReminderMinutes2 = reminder2
             defaultReminderMinutes3 = reminder3
         }
+        */
 
         mEvent.apply {
             startTS = newStartTS
@@ -634,6 +647,8 @@ class EventActivity : SimpleActivity() {
             isFinished = event_finish.isChecked()
             locat_latitude = location_latit
             locat_longitude = location_longit
+            delay_time = delayTime
+            delay_time2 = delayTime2
         }
 
         // recreate the event if it was moved in a different CalDAV calendar

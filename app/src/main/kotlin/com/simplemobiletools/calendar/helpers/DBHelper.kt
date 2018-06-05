@@ -45,6 +45,8 @@ class DBHelper public constructor(val context: Context) : SQLiteOpenHelper(conte
     private val COL_IS_FINISHED = "is_finished"
     private val COL_LOCATION_LATITUDE = "location_latitude"
     private val COL_LOCATION_LONGITUDE = "location_longitude"
+    private val COL_DELAY_TIME = "delay_time"
+    private val COL_DELAY_TIME2 = "delay_time2"
 
     private val META_TABLE_NAME = "events_meta"
     private val COL_EVENT_ID = "event_id"
@@ -75,7 +77,7 @@ class DBHelper public constructor(val context: Context) : SQLiteOpenHelper(conte
     private val mDb: SQLiteDatabase = writableDatabase
 
     companion object {
-        private const val DB_VERSION = 25
+        private const val DB_VERSION = 26
         const val DB_NAME = "events.db"
         const val REGULAR_EVENT_TYPE_ID = 1
         var dbInstance: DBHelper? = null
@@ -94,7 +96,7 @@ class DBHelper public constructor(val context: Context) : SQLiteOpenHelper(conte
                 "$COL_IMPORT_ID TEXT, $COL_FLAGS INTEGER, $COL_EVENT_TYPE INTEGER NOT NULL DEFAULT $REGULAR_EVENT_TYPE_ID, " +
                 "$COL_PARENT_EVENT_ID INTEGER, $COL_OFFSET TEXT, $COL_IS_DST_INCLUDED INTEGER, $COL_LAST_UPDATED INTEGER, $COL_EVENT_SOURCE TEXT, " +
                 "$COL_LOCATION TEXT, $COL_LOCATION_DESCRIPTION TEXT, $COL_LOCATION_ID TEXT, $COL_CHECK_LOCATION INTEGER, $COL_CATEGORY TEXT, $COL_IS_FINISHED INTEGER, " +
-                "$COL_LOCATION_LATITUDE TEXT, $COL_LOCATION_LONGITUDE)")
+                "$COL_LOCATION_LATITUDE TEXT, $COL_LOCATION_LONGITUDE, $COL_DELAY_TIME INTEGER, $COL_DELAY_TIME2 INTEGER)")
 
         createMetaTable(db)
         createTypesTable(db)
@@ -216,6 +218,11 @@ class DBHelper public constructor(val context: Context) : SQLiteOpenHelper(conte
         if(oldVersion < 25) {
             db.execSQL("ALTER TABLE $MAIN_TABLE_NAME ADD COLUMN $COL_LOCATION_LATITUDE TEXT DEFAULT ''")
             db.execSQL("ALTER TABLE $MAIN_TABLE_NAME ADD COLUMN $COL_LOCATION_LONGITUDE TEXT DEFAULT ''")
+        }
+
+        if(oldVersion < 26) {
+            db.execSQL("ALTER TABLE $MAIN_TABLE_NAME ADD COLUMN $COL_DELAY_TIME INTEGER NOT NULL DEFAULT 0")
+            db.execSQL("ALTER TABLE $MAIN_TABLE_NAME ADD COLUMN $COL_DELAY_TIME2 INTEGER NOT NULL DEFAULT 0")
         }
     }
 
@@ -346,6 +353,8 @@ class DBHelper public constructor(val context: Context) : SQLiteOpenHelper(conte
             put(COL_IS_FINISHED, if (event.isFinished) 1 else 0)
             put(COL_LOCATION_LATITUDE, event.locat_latitude)
             put(COL_LOCATION_LONGITUDE, event.locat_longitude)
+            put(COL_DELAY_TIME, event.delay_time)
+            put(COL_DELAY_TIME2, event.delay_time2)
         }
     }
 
@@ -924,7 +933,7 @@ class DBHelper public constructor(val context: Context) : SQLiteOpenHelper(conte
         get() = arrayOf("$MAIN_TABLE_NAME.$COL_ID", COL_START_TS, COL_END_TS, COL_TITLE, COL_DESCRIPTION, COL_REMINDER_MINUTES, COL_REMINDER_MINUTES_2,
                 COL_REMINDER_MINUTES_3, COL_REPEAT_INTERVAL, COL_REPEAT_RULE, COL_IMPORT_ID, COL_FLAGS, COL_REPEAT_LIMIT, COL_EVENT_TYPE, COL_OFFSET,
                 COL_IS_DST_INCLUDED, COL_LAST_UPDATED, COL_EVENT_SOURCE, COL_LOCATION, COL_LOCATION_DESCRIPTION, COL_LOCATION_ID,
-                COL_CHECK_LOCATION, COL_CATEGORY, COL_IS_FINISHED, COL_LOCATION_LATITUDE, COL_LOCATION_LONGITUDE)
+                COL_CHECK_LOCATION, COL_CATEGORY, COL_IS_FINISHED, COL_LOCATION_LATITUDE, COL_LOCATION_LONGITUDE, COL_DELAY_TIME, COL_DELAY_TIME2)
 
     private fun fillEvents(cursor: Cursor?): List<Event> {
         val eventTypeColors = SparseIntArray()
@@ -962,6 +971,8 @@ class DBHelper public constructor(val context: Context) : SQLiteOpenHelper(conte
                     val isFinished = cursor.getIntValue(COL_IS_FINISHED) == 1
                     val locationLatitude = cursor.getStringValue(COL_LOCATION_LATITUDE)
                     val locationLongitude = cursor.getStringValue(COL_LOCATION_LONGITUDE)
+                    val delayTime = cursor.getIntValue(COL_DELAY_TIME)
+                    val delayTime2 = cursor.getIntValue(COL_DELAY_TIME2)
                     val color = eventTypeColors[eventType]
 
                     val ignoreEventOccurrences = if (repeatInterval != 0) {
@@ -976,7 +987,8 @@ class DBHelper public constructor(val context: Context) : SQLiteOpenHelper(conte
 
                     val event = Event(id, startTS, endTS, title, description, reminder1Minutes, reminder2Minutes, reminder3Minutes,
                             repeatInterval, importId, flags, repeatLimit, repeatRule, eventType, ignoreEventOccurrences, offset, isDstIncluded,
-                            0, lastUpdated, source, color, location, locationDescription, locationId, checkLocation, category, isFinished, locationLatitude, locationLongitude)
+                            0, lastUpdated, source, color, location, locationDescription,
+                            locationId, checkLocation, category, isFinished, locationLatitude, locationLongitude, delayTime, delayTime2)
                     events.add(event)
                 } while (cursor.moveToNext())
             }

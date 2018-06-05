@@ -1,5 +1,6 @@
 package com.simplemobiletools.calendar.helpers
 
+
 const val LOW_ALPHA = .3f
 const val MEDIUM_ALPHA = .6f
 const val STORED_LOCALLY_ONLY = 0
@@ -53,6 +54,9 @@ const val DISPLAY_PAST_EVENTS = "display_past_events"
 const val REPLACE_DESCRIPTION = "replace_description"
 const val SHOW_GRID = "show_grid"
 const val DELAY_ALARM_TIME = "delay_alarm_time"
+const val DELAY_ALARM_TIME2 = "delay_alarm_time2"
+const val DELAY_ALARM_TIME2_VALUE = "delay_alarm_time2_value"
+const val WAS_DELAY_ALARM_TIME2_TOGGLED = "was_delay_alarm_time2_toggled"
 
 // repeat_rule for monthly repetition
 const val REPEAT_MONTH_SAME_DAY = 1                   // ie 25th every month
