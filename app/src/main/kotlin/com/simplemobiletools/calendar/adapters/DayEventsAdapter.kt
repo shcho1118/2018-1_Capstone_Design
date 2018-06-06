@@ -1,9 +1,14 @@
 package com.simplemobiletools.calendar.adapters
 
+import android.content.Intent
+import android.support.v4.content.ContextCompat.startActivity
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import com.simplemobiletools.calendar.R
+import com.simplemobiletools.calendar.activities.MainActivity
 import com.simplemobiletools.calendar.activities.SimpleActivity
 import com.simplemobiletools.calendar.dialogs.DeleteEventDialog
 import com.simplemobiletools.calendar.extensions.config
@@ -16,7 +21,9 @@ import com.simplemobiletools.commons.extensions.applyColorFilter
 import com.simplemobiletools.commons.extensions.beInvisible
 import com.simplemobiletools.commons.extensions.beInvisibleIf
 import com.simplemobiletools.commons.views.MyRecyclerView
+import kotlinx.android.synthetic.main.activity_event.*
 import kotlinx.android.synthetic.main.event_item_day_view.view.*
+import com.simplemobiletools.calendar.extensions.*
 
 class DayEventsAdapter(activity: SimpleActivity, val events: ArrayList<Event>, recyclerView: MyRecyclerView, itemClick: (Any) -> Unit)
     : MyRecyclerViewAdapter(activity, recyclerView, null, itemClick) {
@@ -65,6 +72,14 @@ class DayEventsAdapter(activity: SimpleActivity, val events: ArrayList<Event>, r
             event_item_finish.setOnClickListener {
                 event.isFinished = event_item_finish.isChecked()
                 context!!.dbHelper.update(event, true)
+
+                /*
+                if(event.isFinished) {
+                    val intent = Intent(this, PopupActivity::class.java)
+                    startActivity(intent)
+                }
+                */
+
             }
             event_section_title.text = event.title
             event_item_description.text = if (replaceDescriptionWithLocation) event.location else event.description
@@ -131,4 +146,7 @@ class DayEventsAdapter(activity: SimpleActivity, val events: ArrayList<Event>, r
             removeSelectedItems()
         }
     }
+
+
+
 }

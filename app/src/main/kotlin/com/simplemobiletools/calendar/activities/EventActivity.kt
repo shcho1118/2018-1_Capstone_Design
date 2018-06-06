@@ -32,8 +32,8 @@ import kotlinx.android.synthetic.main.activity_event.view.*
 import org.joda.time.DateTime
 import java.util.*
 import java.util.regex.Pattern
-
-
+import android.app.Activity
+import android.widget.PopupMenu
 
 
 class EventActivity : SimpleActivity() {
@@ -52,6 +52,7 @@ class EventActivity : SimpleActivity() {
     private var locationId = ""
     private var delayTime = 0
     private var delayTime2 = 0
+    private var alphadelay = 0
 
     lateinit var mEventStartDateTime: DateTime
     lateinit var mEventEndDateTime: DateTime
@@ -93,6 +94,8 @@ class EventActivity : SimpleActivity() {
 
         delayTime = config.defaultDelayAlarmTime
         delayTime2 = config.defaultDelayAlarmTime2Value
+
+
 
         checkReminderTexts()
         updateRepetitionText()
@@ -183,6 +186,8 @@ class EventActivity : SimpleActivity() {
         mEventCalendarId = mEvent.getCalDAVCalendarId()
         locationId = mEvent.locat_placeid
         checkRepeatTexts(mRepeatInterval)
+        delayTime = mEvent.delay_time
+        delayTime2 = mEvent.delay_time2
     }
 
     private fun setupNewEvent() {
@@ -621,6 +626,22 @@ class EventActivity : SimpleActivity() {
         }
         */
 
+        if(event_finish.isChecked && delayTime == -1 && checked_location != 0){
+            /*
+            val intent = Intent(this, PopupActivity::class.java)
+            startActivity(intent)
+
+
+            startActivityForResult(intent, 3000)
+            delayTime = -2
+            var temp = config.defaultDelayAlarmTime2Value
+            temp = temp + alphadelay
+            temp = temp / 100
+            config.defaultDelayAlarmTime2Value = temp
+            */
+
+        }
+
         mEvent.apply {
             startTS = newStartTS
             endTS = newEndTS
@@ -941,4 +962,47 @@ class EventActivity : SimpleActivity() {
         }
         */
     }
+
+
+/*
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            1 -> {
+                val key = data?.getIntExtra("key", 0)
+                alphadelay = key!!
+            }
+        }
+    }
+    */
+
+    /*
+ private fun showPopup(view: View) {
+     var popup: PopupMenu? = null
+     popup = PopupMenu(this, view)
+     popup.inflate(R.menu.popup_menu)
+
+     popup.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener { item: MenuItem? ->
+
+         when (item!!.itemId) {
+             R.id.btn_1 -> {
+                 config.defaultDelayAlarmTime2Value = config.defaultDelayAlarmTime2Value + 0
+             }
+             R.id.btn_2 -> {
+                 config.defaultDelayAlarmTime2Value = config.defaultDelayAlarmTime2Value - 3
+             }
+             R.id.btn_3 -> {
+                 config.defaultDelayAlarmTime2Value = config.defaultDelayAlarmTime2Value + 4
+             }
+         }
+
+         true
+     })
+
+     popup.show()
+ }
+ */
+
+
+
 }
