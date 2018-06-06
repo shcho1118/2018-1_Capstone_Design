@@ -231,14 +231,13 @@ class StatisticsFragment : MyFragmentHolder(), RefreshRecyclerViewListener, OnIt
                 mPie?.setVisibility(View.GONE)
                 mPie2?.setVisibility(View.GONE)
             }
-            mView.calendar_schedule_performance.text = "${getString(R.string.schedule_performance)} ${finishedEvents.toString()}/${totalEvents.toString()}"
-            //mView.calendar_schedule_performance.text = "${selectedYear.toString()} year ${selectedMonth.toString()} month"
+            //mView.calendar_schedule_performance.text = "${getString(R.string.schedule_performance)} ${finishedEvents.toString()}/${totalEvents.toString()}"
             mPie?.invalidate()
-            var proportionString = "${getString(R.string.schedule_proportion)}\n"
+            /*var proportionString = "${getString(R.string.schedule_proportion)}\n"
             for((category, count) in sortedMap){
                 proportionString += "\nCategory: $category, Count: $count"
             }
-            mView.calendar_schedule_proportion.text = proportionString
+            mView.calendar_schedule_proportion.text = proportionString*/
             mPie2?.invalidate()
         }
     }

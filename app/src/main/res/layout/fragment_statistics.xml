@@ -50,7 +50,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/month_spinner"
         android:lineSpacingExtra="1dp"
+        android:layout_marginTop="10dp"
         android:padding="@dimen/big_margin"
+        android:textSize="20sp"
         android:text="@string/schedule_performance"/>
 
     <com.github.mikephil.charting.charts.PieChart
@@ -66,7 +68,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/piechart_performance"
         android:lineSpacingExtra="1dp"
+        android:layout_marginTop="10dp"
         android:padding="@dimen/big_margin"
+        android:textSize="20sp"
         android:text="@string/schedule_proportion"/>
 
     <com.github.mikephil.charting.charts.PieChart

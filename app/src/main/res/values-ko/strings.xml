@@ -12,7 +12,7 @@
     <string name="no_upcoming_events">다가올 이벤트가 없는 것 같습니다.</string>
     <string name="add_some_events">아래의 더하기 버튼을 눌러 추가할 수 있습니다.</string>
     <string name="go_to_today">오늘로 이동</string>
-    <string name="schedule_performance">일정 수행도 :</string>
+    <string name="schedule_performance">일정 수행도</string>
     <string name="schedule_proportion">일정 비중</string>
 
     <!-- Widget titles -->
