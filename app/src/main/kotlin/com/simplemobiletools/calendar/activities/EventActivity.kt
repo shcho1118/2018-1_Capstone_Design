@@ -248,9 +248,13 @@ class EventActivity : SimpleActivity() {
                 val titleList = arrayListOf<URI>()
                 val relatedList = arrayListOf<String>()
 
-                for (i in files.indices) {
-                    titleList.add(files[i].toURI())
+                val it = files.iterator()
+                while(it.hasNext()){
+                    titleList.add(it.next().toURI())
                 }
+                Log.d("showPictures", mEventStartDateTime.millis.toString())
+                Log.d("showPictures", mEventEndDateTime.millis.toString())
+
                 if(mEventStartDateTime.millis == mEventEndDateTime.millis ){
                     val it = titleList.iterator()
                     while(it.hasNext()){
@@ -258,6 +262,7 @@ class EventActivity : SimpleActivity() {
                         val simpleDateFormat = SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.KOREA)
                         val extractedTime = simpleDateFormat.
                                 parse(exif.getAttribute(ExifInterface.TAG_DATETIME)).time
+                        Log.d("showPictures", extractedTime.toString())
                         if(mEventStartDateTime.millis <= extractedTime)
                             relatedList.add(it.next().toString())
                     }
@@ -269,6 +274,7 @@ class EventActivity : SimpleActivity() {
                         val simpleDateFormat = SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.KOREA)
                         val extractedTime = simpleDateFormat.
                                 parse(exif.getAttribute(ExifInterface.TAG_DATETIME)).time
+                        Log.d("showPictures", extractedTime.toString())
                         if(mEventStartDateTime.millis <= extractedTime &&
                                 mEventEndDateTime.millis >= extractedTime)
                             relatedList.add(it.next().toString())
