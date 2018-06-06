@@ -258,26 +258,28 @@ class EventActivity : SimpleActivity() {
                 if(mEventStartDateTime.millis == mEventEndDateTime.millis ){
                     val it = titleList.iterator()
                     while(it.hasNext()){
-                        val exif = ExifInterface(it.next().path)
+                        val curURI = it.next()
+                        val exif = ExifInterface(curURI.path)
                         val simpleDateFormat = SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.KOREA)
                         val extractedTime = simpleDateFormat.
                                 parse(exif.getAttribute(ExifInterface.TAG_DATETIME)).time
                         Log.d("showPictures", extractedTime.toString())
                         if(mEventStartDateTime.millis <= extractedTime)
-                            relatedList.add(it.next().toString())
+                            relatedList.add(curURI.toString())
                     }
                 }
                 else{
                     val it = titleList.iterator()
                     while(it.hasNext()){
-                        val exif = ExifInterface(it.next().path)
+                        val curURI = it.next()
+                        val exif = ExifInterface(curURI.path)
                         val simpleDateFormat = SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.KOREA)
                         val extractedTime = simpleDateFormat.
                                 parse(exif.getAttribute(ExifInterface.TAG_DATETIME)).time
                         Log.d("showPictures", extractedTime.toString())
                         if(mEventStartDateTime.millis <= extractedTime &&
                                 mEventEndDateTime.millis >= extractedTime)
-                            relatedList.add(it.next().toString())
+                            relatedList.add(curURI.toString())
                     }
                 }
 
