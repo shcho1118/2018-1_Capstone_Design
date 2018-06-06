@@ -254,7 +254,12 @@ class EventActivity : SimpleActivity() {
                 if(mEventStartDateTime.millis == mEventEndDateTime.millis ){
                     val it = titleList.iterator()
                     while(it.hasNext()){
-                        relatedList.add(it.next().toString())
+                        val exif = ExifInterface(it.next().path)
+                        val simpleDateFormat = SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.KOREA)
+                        val extractedTime = simpleDateFormat.
+                                parse(exif.getAttribute(ExifInterface.TAG_DATETIME)).time
+                        if(mEventStartDateTime.millis <= extractedTime)
+                            relatedList.add(it.next().toString())
                     }
                 }
                 else{
@@ -265,9 +270,8 @@ class EventActivity : SimpleActivity() {
                         val extractedTime = simpleDateFormat.
                                 parse(exif.getAttribute(ExifInterface.TAG_DATETIME)).time
                         if(mEventStartDateTime.millis <= extractedTime &&
-                                mEventEndDateTime.millis >= extractedTime){
+                                mEventEndDateTime.millis >= extractedTime)
                             relatedList.add(it.next().toString())
-                        }
                     }
                 }
 
