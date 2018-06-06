@@ -25,7 +25,7 @@ android {
             applicationIdSuffix ".debug"
         }
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
@@ -67,6 +67,8 @@ dependencies {
     implementation 'com.google.http-client:google-http-client-gson:1.23.0' exclude module: 'httpclient'
     implementation 'com.google.apis:google-api-services-vision:v1-rev369-1.23.0'
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.7.+'
+    implementation 'com.facebook.fresco:fresco:1.9.0'
+    implementation 'com.github.stfalcon:frescoimageviewer:0.5.0'
 }
 
 Properties props = new Properties()

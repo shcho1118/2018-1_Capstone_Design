@@ -229,6 +229,7 @@
     <string name="action_reply">Reply</string>
     <string name="title_activity_crop">CropActivity</string>
     <string name="title_activity_crop_activityt">CropActivityt</string>
+    <string name="search_related_pictures">Search Related Pictures</string>
 
     <!--
         Haven't found some strings? There's more at

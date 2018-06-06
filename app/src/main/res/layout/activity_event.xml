@@ -13,11 +13,18 @@
         android:layout_alignParentTop="true"
         android:adjustViewBounds="true" />
 
+    <com.simplemobiletools.commons.views.MyButton
+        android:id = "@+id/event_pictures"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/event_croppedImage"
+        android:text="@string/search_related_pictures"/>
+
     <ScrollView
         android:id="@+id/event_scrollview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/event_croppedImage">
+        android:layout_below="@+id/event_pictures">
 
         <RelativeLayout
             android:id="@+id/event_holder"
@@ -586,6 +593,7 @@
                 android:layout_marginTop="@dimen/medium_margin"
                 android:background="@color/divider_grey"
                 android:importantForAccessibility="no"/>
+
         </RelativeLayout>
     </ScrollView>
 </RelativeLayout>

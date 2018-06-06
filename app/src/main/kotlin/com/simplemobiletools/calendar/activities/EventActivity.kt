@@ -33,7 +33,18 @@ import org.joda.time.DateTime
 import java.util.*
 import java.util.regex.Pattern
 import android.app.Activity
+import android.media.ExifInterface
+import android.os.Environment
+import android.util.Log
 import android.widget.PopupMenu
+import com.facebook.drawee.backends.pipeline.Fresco
+import com.stfalcon.frescoimageviewer.ImageViewer
+import kotlinx.android.synthetic.main.widget_config_list.*
+import java.io.File
+import java.io.FilenameFilter
+import java.net.URI
+import java.text.SimpleDateFormat
+import kotlin.collections.ArrayList
 
 
 class EventActivity : SimpleActivity() {
@@ -83,12 +94,14 @@ class EventActivity : SimpleActivity() {
         if (event != null) {
             mEvent = event
             mEventOccurrenceTS = intent.getIntExtra(EVENT_OCCURRENCE_TS, 0)
+            event_pictures.visibility = View.VISIBLE
             setupEditEvent()
         } else {
             mEvent = Event()
             mReminder1Minutes = config.defaultReminderMinutes
             mReminder2Minutes = config.defaultReminderMinutes3
             mReminder3Minutes = config.defaultReminderMinutes2
+            event_pictures.visibility = View.GONE
             setupNewEvent()
         }
 
@@ -103,6 +116,9 @@ class EventActivity : SimpleActivity() {
         updateEndTexts()
         updateEventType()
         updateCalDAVCalendar()
+
+        event_pictures.setOnClickListener { showRelatedPictures() }
+
 
         // 도착장소 id를 반환하는 거..
         find_location.setOnClickListener{ findLocation() }
@@ -188,6 +204,7 @@ class EventActivity : SimpleActivity() {
         checkRepeatTexts(mRepeatInterval)
         delayTime = mEvent.delay_time
         delayTime2 = mEvent.delay_time2
+
     }
 
     private fun setupNewEvent() {
@@ -216,6 +233,57 @@ class EventActivity : SimpleActivity() {
 
             val addHours = if (intent.getBooleanExtra(NEW_EVENT_SET_HOUR_DURATION, false)) 1 else 0
             mEventEndDateTime = mEventStartDateTime.plusHours(addHours)
+        }
+    }
+
+
+    private fun showRelatedPictures(){
+        fun getRelatedList(): ArrayList<String>? {
+            try {
+                val fileFilter = FilenameFilter { dir, name ->
+                    name.endsWith("jpg")
+                }
+                val file = File(Environment.getExternalStorageDirectory().absolutePath + "/DCIM/Camera")
+                val files = file.listFiles(fileFilter)
+                val titleList = arrayListOf<URI>()
+                val relatedList = arrayListOf<String>()
+
+                for (i in files.indices) {
+                    titleList.add(files[i].toURI())
+                }
+                if(mEventStartDateTime.millis == mEventEndDateTime.millis ){
+                    val it = titleList.iterator()
+                    while(it.hasNext()){
+                        relatedList.add(it.next().toString())
+                    }
+                }
+                else{
+                    val it = titleList.iterator()
+                    while(it.hasNext()){
+                        val exif = ExifInterface(it.next().path)
+                        val simpleDateFormat = SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.KOREA)
+                        val extractedTime = simpleDateFormat.
+                                parse(exif.getAttribute(ExifInterface.TAG_DATETIME)).time
+                        if(mEventStartDateTime.millis <= extractedTime &&
+                                mEventEndDateTime.millis >= extractedTime){
+                            relatedList.add(it.next().toString())
+                        }
+                    }
+                }
+
+                return relatedList
+            } catch (e: Exception) {
+                return null
+            }
+
+        }
+
+        val imgs = getRelatedList()
+
+        if(imgs != null){
+            val imageViewer = ImageViewer.Builder(this, imgs)
+            imageViewer.setStartPosition(1)
+            imageViewer.show()
         }
     }
 
