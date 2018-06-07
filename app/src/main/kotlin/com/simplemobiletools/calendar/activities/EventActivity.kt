@@ -248,19 +248,21 @@ class EventActivity : SimpleActivity() {
                 }
 
                 fun rad2deg(rad:Double):Double{
-                    return (rad * 180 / Math.PI)
+                    return (rad * 180.0 / Math.PI)
                 }
 
                 val theta = lon1 - lon2
-                var dist = Math.sin(deg2rad(lat1) *
-                        Math.sin(deg2rad(lat2))) +
-                        Math.cos(deg2rad(lat1)) *
-                        Math.cos(deg2rad(lat2)) *
-                        Math.cos(deg2rad(theta))
+                Log.d("showPictures", "theta is " + theta.toString())
+                var dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta))
+                Log.d("showPictures", "dist is " + dist.toString())
                 dist = Math.acos(dist)
+                Log.d("showPictures", "dist is " + dist.toString())
                 dist = rad2deg(dist)
+                Log.d("showPictures", "dist is " + dist.toString())
                 dist *= (60 * 1.1515)
+                Log.d("showPictures", "dist is " + dist.toString())
                 dist *= 1609.344
+                Log.d("showPictures", "dist is " + dist.toString())
 
                 return dist
             }
@@ -309,6 +311,8 @@ class EventActivity : SimpleActivity() {
                     }
                 }
 
+                Log.d("showPictures", "시간 기반: " + weakRelatedList.toString())
+
                 val locatLatitude = mEvent.locat_latitude.toDoubleOrNull()
                 val locatLongitude = mEvent.locat_longitude.toDoubleOrNull()
                 Log.d("showPictures", "일정 목적지: " + locatLatitude.toString() + " " + locatLongitude.toString())
@@ -321,12 +325,15 @@ class EventActivity : SimpleActivity() {
                         val curURI = URI.create(it.next())
                         val exif = ExifInterface(curURI.path)
                         val latLong = FloatArray(2)
+                        Log.d("showPictures", "사진 경로: " + curURI.path.toString())
                         if(exif.getLatLong(latLong)){
                             val pictureLatitude:Double = latLong[0].toDouble()
                             val pictureLongitude:Double = latLong[1].toDouble()
                             Log.d("showPictures", "사진 위치: " + pictureLatitude.toString() + " " + pictureLongitude.toString())
-                            if(distance(pictureLatitude, pictureLongitude,
-                                            locatLatitude, locatLongitude) <= 1000)
+                            val dist = distance(pictureLatitude, pictureLongitude,
+                                    locatLatitude, locatLongitude)
+                            Log.d("showPictures", "거리: " + dist.toString())
+                            if(dist <= 1000)
                                 strongRelatedList.add(curURI.toString())
                         }
                     }
@@ -341,7 +348,6 @@ class EventActivity : SimpleActivity() {
             }
 
         }
-
 
         val imgs = getRelatedList()
 
