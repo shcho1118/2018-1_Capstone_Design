@@ -1,4 +1,4 @@
-package com.simplemobiletools.calendar.services;
+package com.simplemobiletools.calendar.activities;
 
 import android.os.Bundle;
 import android.view.MotionEvent;

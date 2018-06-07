@@ -10,6 +10,7 @@ import android.widget.PopupMenu
 import com.simplemobiletools.calendar.R
 import com.simplemobiletools.calendar.activities.MainActivity
 import com.simplemobiletools.calendar.activities.SimpleActivity
+import com.simplemobiletools.calendar.activities.PopupActivity
 import com.simplemobiletools.calendar.dialogs.DeleteEventDialog
 import com.simplemobiletools.calendar.extensions.config
 import com.simplemobiletools.calendar.extensions.dbHelper
@@ -73,12 +74,12 @@ class DayEventsAdapter(activity: SimpleActivity, val events: ArrayList<Event>, r
                 event.isFinished = event_item_finish.isChecked()
                 context!!.dbHelper.update(event, true)
 
-                /*
-                if(event.isFinished) {
-                    val intent = Intent(this, PopupActivity::class.java)
-                    startActivity(intent)
+                if(event.isFinished && event.delay_time == -1 && event.check_location != 0) {
+                    val intent = Intent(context, PopupActivity::class.java)
+                    context.startActivity(intent)
+                    event.delay_time = -2
+                    context!!.dbHelper.update(event, true)
                 }
-                */
 
             }
             event_section_title.text = event.title

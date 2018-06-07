@@ -202,7 +202,10 @@ class EventActivity : SimpleActivity() {
         mEventCalendarId = mEvent.getCalDAVCalendarId()
         locationId = mEvent.locat_placeid
         checkRepeatTexts(mRepeatInterval)
-        delayTime = mEvent.delay_time
+        if(mEvent.delay_time == -2)
+            delayTime = -2
+        else
+            delayTime = mEvent.delay_time
         delayTime2 = mEvent.delay_time2
 
     }
@@ -766,18 +769,10 @@ class EventActivity : SimpleActivity() {
         */
 
         if(event_finish.isChecked && delayTime == -1 && checked_location != 0){
-            /*
+
             val intent = Intent(this, PopupActivity::class.java)
             startActivity(intent)
-
-
-            startActivityForResult(intent, 3000)
-            delayTime = -2
-            var temp = config.defaultDelayAlarmTime2Value
-            temp = temp + alphadelay
-            temp = temp / 100
-            config.defaultDelayAlarmTime2Value = temp
-            */
+            mEvent.delay_time = -2
 
         }
 

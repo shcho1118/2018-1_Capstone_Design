@@ -11,7 +11,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.simplemobiletools.calendar.services.PopupActivity;
+import com.simplemobiletools.calendar.activities.PopupActivity;
 import com.simplemobiletools.calendar.helpers.DBHelper;
 import com.simplemobiletools.calendar.models.Event;
 import com.skt.Tmap.TMapTapi;
@@ -189,12 +189,14 @@ public class MyLocationService extends Service {
                         dbHelper.update(mEvent, true, null);
                     }
 
+                    /*
                     if(checked != 0 && lefttime/60000 < -20 && lefttime/60000 > -40 && delay1 == -1)
                     {
                         getPopup();
                         db.execSQL("UPDATE events SET delay_time = " + -2 + " WHERE id = " + eventNo);
                         db.execSQL("UPDATE events SET is_finished = " + 1 + " WHERE id = " + eventNo);
                     }
+                    */
 
                     String eventTitle = cursor1.getString(3);
                     Log.d("Location Test", "Event = " + eventTitle + startTime + ", reminderTime " + reminderTime + " PLACEID : "+eventPlaceID);
@@ -212,10 +214,12 @@ public class MyLocationService extends Service {
 
     }
 
+    /*
     public void getPopup(){
         Intent intent = new Intent(this, PopupActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
+    */
 
 }
 
