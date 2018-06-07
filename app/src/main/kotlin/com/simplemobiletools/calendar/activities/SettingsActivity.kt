@@ -414,6 +414,11 @@ class SettingsActivity : SimpleActivity() {
                 settings_alarm_time_later.text = "자동 조정 사용 중"
 
             }
+            if(!settings_alarm_time_later2.isChecked) {
+                config.defaultDelayAlarmTime = 0
+                settings_alarm_time_later.text = formatMinutesToTimeString(config.defaultDelayAlarmTime)
+
+            }
         }
     }
 
