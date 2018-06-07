@@ -293,8 +293,10 @@ class EventActivity : SimpleActivity() {
                         val curURI = it.next()
                         val exif = ExifInterface(curURI.path)
                         val simpleDateFormat = SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.KOREA)
-                        val extractedTime = simpleDateFormat.
-                                parse(exif.getAttribute(ExifInterface.TAG_DATETIME)).time
+                        val extractedDateTime = exif.getAttribute(ExifInterface.TAG_DATETIME)
+                        if(extractedDateTime == null)
+                            continue
+                        val extractedTime = simpleDateFormat.parse(extractedDateTime).time
                         Log.d("showPictures", "start == end is " + extractedTime.toString())
                         if(mEventStartDateTime.millis <= extractedTime)
                             weakRelatedList.add(curURI.toString())
@@ -306,8 +308,10 @@ class EventActivity : SimpleActivity() {
                         val curURI = it.next()
                         val exif = ExifInterface(curURI.path)
                         val simpleDateFormat = SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.KOREA)
-                        val extractedTime = simpleDateFormat.
-                                parse(exif.getAttribute(ExifInterface.TAG_DATETIME)).time
+                        val extractedDateTime = exif.getAttribute(ExifInterface.TAG_DATETIME)
+                        if(extractedDateTime == null)
+                            continue
+                        val extractedTime = simpleDateFormat.parse(extractedDateTime).time
                         Log.d("showPictures", "start != end is " + extractedTime.toString())
                         if(mEventStartDateTime.millis <= extractedTime &&
                                 mEventEndDateTime.millis >= extractedTime)
