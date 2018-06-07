@@ -269,7 +269,7 @@ class EventActivity : SimpleActivity() {
 
             try {
                 val fileFilter = FilenameFilter { dir, name ->
-                    name.endsWith("jpg")
+                    name.endsWith("jpg") || name.endsWith("JPG")
                 }
                 val file = File(Environment.getExternalStorageDirectory().absolutePath + "/DCIM/Camera")
                 val files = file.listFiles(fileFilter)
