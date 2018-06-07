@@ -283,8 +283,9 @@ class EventActivity : SimpleActivity() {
                 while(it.hasNext()){
                     titleList.add(it.next().toURI())
                 }
-                Log.d("showPictures", mEventStartDateTime.millis.toString())
-                Log.d("showPictures", mEventEndDateTime.millis.toString())
+                Log.d("showPictures", "titleList is " + titleList.toString())
+                Log.d("showPictures", "startTs is " + mEventStartDateTime.millis.toString())
+                Log.d("showPictures", "endTs is " + mEventEndDateTime.millis.toString())
 
                 if(mEventStartDateTime.millis == mEventEndDateTime.millis ){
                     val it = titleList.iterator()
@@ -294,7 +295,7 @@ class EventActivity : SimpleActivity() {
                         val simpleDateFormat = SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.KOREA)
                         val extractedTime = simpleDateFormat.
                                 parse(exif.getAttribute(ExifInterface.TAG_DATETIME)).time
-                        Log.d("showPictures", extractedTime.toString())
+                        Log.d("showPictures", "start == end is " + extractedTime.toString())
                         if(mEventStartDateTime.millis <= extractedTime)
                             weakRelatedList.add(curURI.toString())
                     }
@@ -307,7 +308,7 @@ class EventActivity : SimpleActivity() {
                         val simpleDateFormat = SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.KOREA)
                         val extractedTime = simpleDateFormat.
                                 parse(exif.getAttribute(ExifInterface.TAG_DATETIME)).time
-                        Log.d("showPictures", extractedTime.toString())
+                        Log.d("showPictures", "start != end is " + extractedTime.toString())
                         if(mEventStartDateTime.millis <= extractedTime &&
                                 mEventEndDateTime.millis >= extractedTime)
                             weakRelatedList.add(curURI.toString())
@@ -319,6 +320,7 @@ class EventActivity : SimpleActivity() {
                 val locatLatitude = mEvent.locat_latitude.toDoubleOrNull()
                 val locatLongitude = mEvent.locat_longitude.toDoubleOrNull()
                 Log.d("showPictures", "일정 목적지: " + locatLatitude.toString() + " " + locatLongitude.toString())
+
                 if(locatLatitude == null || locatLongitude == null)
                     return weakRelatedList
                 else{
