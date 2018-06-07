@@ -1,6 +1,5 @@
 package com.simplemobiletools.calendar.extras;
 
-import android.content.Context;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -34,15 +33,18 @@ public class ExtractRule2 {
     };
     private final String TAG = ExtractRule2.class.getSimpleName();
 
+    private String parsedString = "";
+
     public ExtractRule2(JSONObject json) {
         this.json_result = json;
     }
-////////////////////////////////////////////////////////////////////////////////////////////////////
-    public String getParsedLoc(){
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    public String getParsedLoc() {
         return parsedLoc;
     }
 
-    public Calendar getParsedTime(){
+    public Calendar getParsedTime() {
         return parsedTime;
     }
 
@@ -50,8 +52,12 @@ public class ExtractRule2 {
         return parsedDescription;
     }
 
-    public long getParsedDuration(){
+    public long getParsedDuration() {
         return parsedDuration;
+    }
+
+    public String getParsedString() {
+        return parsedString;
     }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -66,7 +72,13 @@ public class ExtractRule2 {
             JSONObject return_object = json_result.getJSONObject("return_object");
             JSONArray sentences = return_object.getJSONArray("sentence");
             int sentences_length = sentences.length();
+
             int i, j, k;
+
+            for (i = 0; i < sentences_length; i++) {
+                JSONObject sentence = sentences.getJSONObject(i);
+                parsedString += sentence.getString("text") + " ";
+            }
 
             for (i = 0; i < sentences_length; i++) {
                 JSONObject sentence = sentences.getJSONObject(i);
@@ -92,11 +104,10 @@ public class ExtractRule2 {
                         }
                     }
 
-                    if(isFind_loc || isFind_time){
-                        try{
+                    if (isFind_loc || isFind_time) {
+                        try {
                             parsedDescription += SRL.getJSONObject(j).getString("verb");
-                        }
-                        catch (JSONException e){
+                        } catch (JSONException e) {
                             Log.e(TAG, "verb does not exist", e);
                         }
                         break;
@@ -122,7 +133,7 @@ public class ExtractRule2 {
                             }
                         }
 
-                        for (String key : loc.keySet()){
+                        for (String key : loc.keySet()) {
                             parsedLoc = parsedLoc + " " + loc.get(key);
                         }
                     }
@@ -137,22 +148,22 @@ public class ExtractRule2 {
 
                         String timeStr = "";
 
-                        for (String key : time.keySet()){
+                        for (String key : time.keySet()) {
                             timeStr += time.get(key);
                         }
 
                         setParsedTime(timeStr);
                     }
 
-                    for(k = 0; k < TTA_DURATION_LENGTH; k++) {
-                        if(type.equals(TTA_DURATION[k])){
+                    for (k = 0; k < TTA_DURATION_LENGTH; k++) {
+                        if (type.equals(TTA_DURATION[k])) {
                             duration.put(type, text);
                         }
                     }
 
                     String durationStr = "";
 
-                    for(String key : duration.keySet()){
+                    for (String key : duration.keySet()) {
                         durationStr += duration.get(key);
                     }
 
@@ -218,7 +229,7 @@ public class ExtractRule2 {
         int hour = parseIntBefore("시", durationStr);
         int minute = parseIntBefore("분", durationStr);
 
-        if(durationStr.contains("뒤"))
+        if (durationStr.contains("뒤"))
             return;
 
         if (year > 0)
