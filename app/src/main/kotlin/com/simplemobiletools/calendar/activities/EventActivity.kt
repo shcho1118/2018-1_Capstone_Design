@@ -238,7 +238,33 @@ class EventActivity : SimpleActivity() {
 
 
     private fun showRelatedPictures(){
+
         fun getRelatedList(): ArrayList<String>? {
+
+            fun distance(lat1:Double, lon1:Double, lat2:Double, lon2:Double):Double{
+
+                fun deg2rad(deg:Double):Double{
+                    return (deg * Math.PI / 180.0)
+                }
+
+                fun rad2deg(rad:Double):Double{
+                    return (rad * 180 / Math.PI)
+                }
+
+                val theta = lon1 - lon2
+                var dist = Math.sin(deg2rad(lat1) *
+                        Math.sin(deg2rad(lat2))) +
+                        Math.cos(deg2rad(lat1)) *
+                        Math.cos(deg2rad(lat2)) *
+                        Math.cos(deg2rad(theta))
+                dist = Math.acos(dist)
+                dist = rad2deg(dist)
+                dist *= (60 * 1.1515)
+                dist *= 1609.344
+
+                return dist
+            }
+
             try {
                 val fileFilter = FilenameFilter { dir, name ->
                     name.endsWith("jpg")
@@ -246,7 +272,7 @@ class EventActivity : SimpleActivity() {
                 val file = File(Environment.getExternalStorageDirectory().absolutePath + "/DCIM/Camera")
                 val files = file.listFiles(fileFilter)
                 val titleList = arrayListOf<URI>()
-                val relatedList = arrayListOf<String>()
+                val weakRelatedList = arrayListOf<String>()
 
                 val it = files.iterator()
                 while(it.hasNext()){
@@ -265,7 +291,7 @@ class EventActivity : SimpleActivity() {
                                 parse(exif.getAttribute(ExifInterface.TAG_DATETIME)).time
                         Log.d("showPictures", extractedTime.toString())
                         if(mEventStartDateTime.millis <= extractedTime)
-                            relatedList.add(curURI.toString())
+                            weakRelatedList.add(curURI.toString())
                     }
                 }
                 else{
@@ -279,22 +305,49 @@ class EventActivity : SimpleActivity() {
                         Log.d("showPictures", extractedTime.toString())
                         if(mEventStartDateTime.millis <= extractedTime &&
                                 mEventEndDateTime.millis >= extractedTime)
-                            relatedList.add(curURI.toString())
+                            weakRelatedList.add(curURI.toString())
                     }
                 }
 
-                return relatedList
+                val locatLatitude = mEvent.locat_latitude.toDoubleOrNull()
+                val locatLongitude = mEvent.locat_longitude.toDoubleOrNull()
+                Log.d("showPictures", "일정 목적지: " + locatLatitude.toString() + " " + locatLongitude.toString())
+                if(locatLatitude == null || locatLongitude == null)
+                    return weakRelatedList
+                else{
+                    val strongRelatedList = arrayListOf<String>()
+                    val it = weakRelatedList.iterator()
+                    while(it.hasNext()){
+                        val curURI = URI.create(it.next())
+                        val exif = ExifInterface(curURI.path)
+                        val latLong = FloatArray(2)
+                        if(exif.getLatLong(latLong)){
+                            val pictureLatitude:Double = latLong[0].toDouble()
+                            val pictureLongitude:Double = latLong[1].toDouble()
+                            Log.d("showPictures", "사진 위치: " + pictureLatitude.toString() + " " + pictureLongitude.toString())
+                            if(distance(pictureLatitude, pictureLongitude,
+                                            locatLatitude, locatLongitude) <= 1000)
+                                strongRelatedList.add(curURI.toString())
+                        }
+                    }
+                    Log.d("showPictures", "위치 기반: " + strongRelatedList.toString())
+                    if(strongRelatedList.isNotEmpty())
+                        return strongRelatedList
+                    else
+                        return null
+                }
             } catch (e: Exception) {
                 return null
             }
 
         }
 
+
         val imgs = getRelatedList()
 
         if(imgs != null){
             val imageViewer = ImageViewer.Builder(this, imgs)
-            imageViewer.setStartPosition(1)
+            imageViewer.setStartPosition(0)
             imageViewer.show()
         }
     }
