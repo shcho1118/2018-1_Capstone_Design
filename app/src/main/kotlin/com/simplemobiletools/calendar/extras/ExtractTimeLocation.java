@@ -30,6 +30,7 @@ public class ExtractTimeLocation {
         String parsedLoc = null;
         Calendar parsedTime = null;
         String parsedDescription = null;
+        String parsedString = null;
         long parsedDuration = 0;
 
         extractRule1.analysisCode();
@@ -39,6 +40,7 @@ public class ExtractTimeLocation {
         parsedTime = extractRule1.getParsedTime();
         parsedDescription = extractRule2.getParsedDescription();
         parsedDuration = extractRule2.getParsedDuration();
+        parsedString = extractRule2.getParsedString();
 
         Log.d(TAG, "parsedLoc is " + parsedLoc);
         Log.d(TAG, "parsedTime is " + parsedTime.getTime().toString());
@@ -53,7 +55,7 @@ public class ExtractTimeLocation {
         targetActivity.putExtra("beginTime", startTs);
         targetActivity.putExtra("endTime", endTs);
         targetActivity.putExtra("eventLocation", parsedLoc);
-        targetActivity.putExtra("description", parsedDescription);
+        targetActivity.putExtra("description", parsedString);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         byte[] byteArray = stream.toByteArray();
