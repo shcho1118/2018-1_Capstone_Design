@@ -70,7 +70,7 @@ public class ImageToText {
 
     // ( 9 )
     private static String analysisStrings(String text) {
-        text = text.replaceAll("\n", "");
+        text = text.replaceAll("\n", " ");
 
         StringBuilder sb = new StringBuilder();
         HttpURLConnection myConnection = null;
