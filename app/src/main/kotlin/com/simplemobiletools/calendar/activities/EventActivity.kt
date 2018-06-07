@@ -144,6 +144,7 @@ class EventActivity : SimpleActivity() {
             event_all_day.toggle()
 
         updateTextColors(event_scrollview)
+        event_pictures.setTextColor(config.textColor)
         updateIconColors()
         wasActivityInitialized = true
     }
