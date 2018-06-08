@@ -70,6 +70,7 @@ public class ExtractRule1 {
     public void analysisCode() {
         try {
             final_time.setTime(new Date());
+            System.out.println("Final_time : " + final_time.getTime());
 
             // JSONObject : { ... }
             JSONObject return_object = json_result.getJSONObject("return_object");
@@ -134,11 +135,22 @@ public class ExtractRule1 {
                                         } else {
                                             base_hour += hour;
                                             if (k != token_length - 1 && (token_list[k + 1].contains("분"))) {
+                                                System.out.println(cur_token);
+                                                System.out.println(base_hour);
                                                 final_time.set(Calendar.HOUR_OF_DAY, base_hour); // (base_hour)로 맞춰줌
                                             }
                                             else {
-                                                final_time.set(Calendar.HOUR_OF_DAY, base_hour); // base_hour로 맞춰줌
-                                                final_time.set(Calendar.MINUTE, 0);
+                                                if (cur_token.contains("시") && cur_token.contains("분")) {
+                                                    int index = cur_token.indexOf("시");
+                                                    String subString = cur_token.substring(0, index);
+                                                    final_time.set(Calendar.HOUR_OF_DAY, integer_from_string(subString));
+                                                    subString = cur_token.substring(index);
+                                                    final_time.set(Calendar.MINUTE, integer_from_string(subString));
+                                                }
+                                                else {
+                                                    final_time.set(Calendar.HOUR_OF_DAY, base_hour); // base_hour로 맞춰줌
+                                                    final_time.set(Calendar.MINUTE, 0);
+                                                }
                                             }
                                         }
                                     } else if (cur_token.contains("분")) {
@@ -281,8 +293,10 @@ public class ExtractRule1 {
                             } else if (cur_token.contains("일")) {
                                 if (cur_token.contains("내일")) {
                                     final_time.add(Calendar.DATE, 1);
+                                    System.out.println("내일 ==> " + final_time.getTime());
                                 } else {
                                     try {
+
                                         // 4일 "뒤"에
                                         if (k != token_length - 1 && (token_list[k + 1].equals("뒤") || token_list[k + 1].equals("후"))) {
                                             final_time.add(Calendar.DATE, integer_from_string(cur_token));
