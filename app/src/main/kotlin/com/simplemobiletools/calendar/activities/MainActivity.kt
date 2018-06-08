@@ -1,5 +1,6 @@
 package com.simplemobiletools.calendar.activities
 
+import android.Manifest
 import android.app.ActivityManager
 import android.app.SearchManager
 import android.content.Context
@@ -11,6 +12,7 @@ import android.database.Cursor
 import android.graphics.drawable.ColorDrawable
 import android.media.projection.MediaProjectionManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.provider.ContactsContract
@@ -166,17 +168,44 @@ class MainActivity : SimpleActivity(), RefreshRecyclerViewListener {
         }
 
         // 서비스 시작
+
+        if (Build.VERSION.SDK_INT >= 23) {
+
+            if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                Log.v("Main-Location","Permission is granted")
+            }else{
+                Log.v("Main-Location","Permission is revoked");
+                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION), 11)
+                finish()
+            }
+        }
+
+        /*
         val gpsCheck = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) // 위치 권한 없으면 이를 허용하는지 여부를 물어본다.
         if (gpsCheck == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION),
                     11)
         }
-        val locationService = Intent( applicationContext, MyLocationService::class.java) // 이동할 컴포넌트
-        if(isServiceRunning("com.simplemobiletools.calendar.services.MyLocationService")){  // 이미 서비스가 실행중이면 실행하지 않는다.
+        */
+
+        if(Build.VERSION.SDK_INT >= 23 && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            val locationService = Intent(applicationContext, MyLocationService::class.java) // 이동할 컴포넌트
+            if (isServiceRunning("com.simplemobiletools.calendar.services.MyLocationService")) {  // 이미 서비스가 실행중이면 실행하지 않는다.
+            } else {
+                startService(locationService)
+                Log.d("Main Activity", "Location 서비스가 시작했어여")
+            }
+        }
+        else if(Build.VERSION.SDK_INT < 23){
+            val locationService = Intent(applicationContext, MyLocationService::class.java) // 이동할 컴포넌트
+            if (isServiceRunning("com.simplemobiletools.calendar.services.MyLocationService")) {  // 이미 서비스가 실행중이면 실행하지 않는다.
+            } else {
+                startService(locationService)
+                Log.d("Main Activity", "Location 서비스가 시작했어여(마쉬멜로 이전버전)")
+            }
         }
         else {
-            startService(locationService)
-            Log.d("Main Activity", "Location 서비스가 시작했어여")
+            Log.d("Main Activity", "Location 서비스 시작 불가")
         }
 
     }
